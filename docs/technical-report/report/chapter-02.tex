@@ -173,3 +173,33 @@ A partir del análisis fenomenológico del espacio de fases y la evolución espa
 Para los propósitos de la presente investigación, enfocada en la computabilidad y el análisis de dinámicas como \textit{Spiral} y \textit{Beehive}, el interés axiomático recae de forma exclusiva sobre la \textbf{Clase IV}. Es únicamente en este régimen analítico donde la información codificada en estructuras móviles no se disipa de inmediato (como en las Clases I y II) ni se degrada en ruido inoperable (Clase III). La preservación de trayectorias en los atractores de la Clase IV asegura colisiones deterministas, proveyendo así la base teórica indispensable para emular lógica booleana y síntesis de operadores de cómputo universal.
 
 
+\section{Teoría de la computabilidad sobre sistemas dinámicos discretos}
+\label{sec:teoria_computabilidad}
+
+La caracterización de los autómatas celulares como sistemas dinámicos permite no solo el modelado de fenómenos físicos, sino también la construcción de un paradigma de procesamiento de información alternativo a la arquitectura de Von Neumann tradicional. En esta sección, se establece la inmersión de la Teoría de la Computación dentro de los espacios celulares, justificando formalmente su capacidad para realizar cálculos universales a través de la interacción de estados discretos.
+
+\subsection{Equivalencia algorítmica y Máquinas de Turing}
+
+La justificación de los autómatas celulares como modelos de cómputo reside en su capacidad para emular el comportamiento de una Máquina de Turing (MT). Se define formalmente que un autómata celular es Turing-completo si existe un mapeo que permita representar la cinta, el alfabeto y la función de transición de una MT dentro de la configuración global del autómata \cite{Kari2005}. 
+
+A diferencia del modelo secuencial de la MT, donde un cabezal altera una celda a la vez, el espacio celular $\mathbb{Z}^d$ opera bajo un esquema de procesamiento masivamente paralelo. No obstante, Von Neumann demostró axiomáticamente que es posible construir un autómata celular con un número finito de estados (específicamente 29 estados en su modelo original) capaz de soportar tanto la computación universal como la autorreplicación \cite{vonNeumann1966}. En este sentido, la "computación" en un espacio discreto se redefine como la evolución de una configuración inicial $\mathcal{C}_0$ (datos de entrada) hacia una configuración final $\mathcal{C}_t$ (resultado) tras la aplicación iterativa del mapeo global $G$.
+
+\subsection{Emergencia de operadores lógicos y universalidad computacional}
+
+Para que un sistema dinámico discreto sea considerado un soporte de computación universal, debe poseer la capacidad intrínseca de sintetizar funciones booleanas fundamentales. En el marco de los autómatas celulares complejos (Clase IV de Wolfram), esta capacidad no se implementa mediante componentes electrónicos fijos, sino a través de la dinámica de colisiones entre partículas emergentes.
+
+Se axiomatiza que la capacidad de procesamiento en estos sistemas se sustenta en tres pilares lógicos:
+\begin{enumerate}
+    \item \textbf{Almacenamiento:} Representado por estructuras estáticas o periódicas que preservan un bit de información en una coordenada espacial fija.
+    \item \textbf{Transmisión:} Ejecutada por los \textit{gliders} o estructuras móviles que trasladan información a través de la retícula $\mathbb{Z}^2$.
+    \item \textbf{Procesamiento:} Manifestado en los puntos de colisión, donde la interacción de dos o más partículas produce una resultante determinista que emula el comportamiento de una compuerta lógica (e.g., AND, OR, NOT) \cite{Toffoli1987}.
+\end{enumerate}
+
+Es posible observar que la complejidad de las reglas \textit{Spiral} y \textit{Beehive}, objeto de esta investigación, permite la existencia de estos tres pilares. La construcción de un sistema de cómputo universal sobre estas reglas implica, por tanto, el diseño de una "computación basada en colisiones", donde la trayectoria de los gliders es el equivalente geométrico a las líneas de datos en un circuito integrado convencional \cite{Adamatzky1994}.
+
+\begin{figure}[h]
+\centering
+% TODO: Insertar diagrama que muestre la analogía entre una Máquina de Turing y un autómata celular, destacando la transición de estados locales como el motor del procesamiento algorítmico.
+\caption{Isomorfismo entre el modelo de Máquina de Turing y la evolución dinámica de un autómata celular bidimensional.}
+\label{fig:equivalencia_turing}
+\end{figure}
