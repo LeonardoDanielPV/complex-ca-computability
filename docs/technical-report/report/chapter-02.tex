@@ -203,3 +203,41 @@ Es posible observar que la complejidad de las reglas \textit{Spiral} y \textit{B
 \caption{Isomorfismo entre el modelo de Máquina de Turing y la evolución dinámica de un autómata celular bidimensional.}
 \label{fig:equivalencia_turing}
 \end{figure}
+
+
+\section{Reversibilidad topológica y dinámica de la información}
+\label{sec:reversibilidad}
+
+La evolución de un autómata celular no solo describe la transformación geométrica de patrones en el espacio discreto, sino que también dicta las leyes de conservación de la información dentro del sistema. La capacidad de una topología para realizar cálculos lógicos está íntimamente ligada a la preservación o disipación de los datos iniciales. Por consiguiente, es imperativo analizar la naturaleza del mapeo global desde una perspectiva de invertibilidad funcional.
+
+\subsection{Inyectividad, suprayectividad y teoremas fundamentales}
+
+Se establece que un autómata celular es \textbf{globalmente reversible} si y solo si su función de transición global $G: \Sigma^{\mathbb{Z}^d} \to \Sigma^{\mathbb{Z}^d}$ es biyectiva. En términos fenomenológicos, la reversibilidad topológica implica un determinismo bidireccional estricto: así como el estado futuro se calcula inequívocamente a partir del presente, la configuración pasada $\mathcal{C}_{t-1}$ puede ser deducida de manera unívoca a partir de la configuración actual $\mathcal{C}_t$ \cite{Toffoli1987}.
+
+Para que la función $G$ sea biyectiva, debe cumplir simultáneamente con dos propiedades matemáticas estructurales:
+\begin{enumerate}
+    \item \textbf{Inyectividad:} No existen dos configuraciones iniciales distintas que evolucionen hacia la misma configuración resultante. Formalmente, si $\mathcal{C}_A \neq \mathcal{C}_B$, entonces $G(\mathcal{C}_A) \neq G(\mathcal{C}_B)$. La inyectividad garantiza que no hay pérdida ni colapso de información durante la transición de estados.
+    \item \textbf{Suprayectividad:} Toda configuración concebible dentro del espacio de fases $\Sigma^{\mathbb{Z}^d}$ posee al menos una configuración predecesora válida. Es decir, para todo estado $\mathcal{C} \in \Sigma^{\mathbb{Z}^d}$, existe un $\mathcal{C}'$ tal que $G(\mathcal{C}') = \mathcal{C}$.
+\end{enumerate}
+
+Dentro de la teoría formal de espacios discretos finitos e infinitos, la relación entre ambas propiedades queda fundamentada por el Teorema de Richardson, el cual demuestra axiomáticamente que, para autómatas celulares, la inyectividad del mapeo global $G$ es una condición suficiente para garantizar su suprayectividad, y por ende, su reversibilidad \cite{Kari2005}.
+
+\subsection{Entropía discreta y estados Jardín del Edén}
+
+Cuando un autómata celular no es suprayectivo, la dinámica del sistema experimenta un fenómeno de irreversibilidad caracterizado por la convergencia de múltiples trayectorias hacia un mismo atractor, colapsando la entropía discreta del sistema. La consecuencia matemática directa de la falta de suprayectividad es la existencia de configuraciones inalcanzables.
+
+A estas configuraciones sin preimagen se les denomina axiomáticamente \textbf{estados Jardín del Edén}. Una configuración $\mathcal{C}_{GE}$ es un estado Jardín del Edén si no existe ninguna configuración en el dominio espacial que la genere mediante un paso temporal; formalmente:
+\begin{equation}
+    \nexists \mathcal{C} \in \Sigma^{\mathbb{Z}^d} \quad \text{tal que} \quad G(\mathcal{C}) = \mathcal{C}_{GE}
+\end{equation}
+
+El Teorema de Moore-Myhill establece una equivalencia lógica profunda: un autómata celular posee estados Jardín del Edén si y solo si su función global $G$ no es inyectiva \cite{Wuensche1998}. Esto significa que la existencia de configuraciones inalcanzables es un síntoma irrefutable de que el sistema destruye información en su evolución temporal (múltiples pasados convergen en un solo presente).
+
+Para los propósitos sintéticos de este Trabajo Terminal, orientados a la emulación computacional mediante colisiones en las reglas complejas \textit{Spiral} y \textit{Beehive}, la irreversibilidad juega un rol paradójicamente constructivo. Si bien los sistemas reversibles conservan la información (asimilables a compuertas lógicas cuánticas o compuertas de Fredkin), el diseño de operaciones booleanas asimétricas tradicionales, como la compuerta lógicas AND u OR discreta, requiere axiomáticamente la disipación de estados (e.g., las entradas $\{0,1\}$, $\{1,0\}$ y $\{0,0\}$ convergen todas a una salida $0$ en una compuerta AND). Por consiguiente, la aniquilación mutua de partículas (\textit{gliders}) en los modelos estudiados se modela teóricamente como transiciones irreversibles que generan implícitamente configuraciones Jardín del Edén, dotando al sistema de la capacidad de operar como un sumidero o filtro de información lógico.
+
+\begin{figure}[h]
+\centering
+% TODO: Insertar diagrama que ilustre el concepto de estados Jardín del Edén y la no inyectividad. Se debe mostrar de forma esquemática cómo múltiples configuraciones iniciales (C1, C2) mapean al mismo estado resultante (C3), y cómo una configuración de tipo Jardín del Edén (C_GE) carece de flechas entrantes (preimágenes) en el grafo de transición.
+\caption{Representación topológica de la irreversibilidad en el espacio de estados. La convergencia de trayectorias ilustra la pérdida de información, mientras que los nodos sin preimágenes denotan estados Jardín del Edén.}
+\label{fig:jardin_eden}
+\end{figure}
