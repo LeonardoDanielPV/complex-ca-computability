@@ -130,21 +130,46 @@ En la práctica computacional, estas evoluciones suelen representarse mediante d
 \label{fig:mapeo_global}
 \end{figure}
 
-% ----------------------------------------------------------------------
-% Bibliografía del Capítulo (Formato IEEE)
-% ----------------------------------------------------------------------
-\begin{thebibliography}{99.}%
 
-\bibitem{Kari2005}
-J. Kari, ``Theory of cellular automata: A survey,'' \textit{Theoretical Computer Science}, vol. 334, no. 1-3, pp. 3--33, 2005.
+\section{Dinámica global y clasificación cualitativa del espacio de fases}
+\label{sec:dinamica_global}
 
-\bibitem{Wolfram2002}
-S. Wolfram, \textit{A New Kind of Science}. Champaign, IL, USA: Wolfram Media, 2002.
+La iteración continua del mapeo global $G$ sobre una configuración inicial $\mathcal{C}_0$ genera una trayectoria única en el espacio de configuraciones $\Sigma^{\mathbb{Z}^d}$. Para comprender sistemáticamente los patrones de convergencia o divergencia a largo plazo, resulta indispensable estudiar el autómata celular desde la perspectiva de los sistemas dinámicos discretos, analizando la topología de su espacio de fases.
 
-\bibitem{Adamatzky1994}
-A. Adamatzky, \textit{Identification of Cellular Automata}. Londres, Reino Unido: Taylor \& Francis, 1994.
+\subsection{Atractores espaciales y estabilidad asintótica}
 
-\bibitem{Basurto2009}
-R. Basurto Flores y P. A. León Hernández, ``Computación basada en reacción de partículas en un autómata celular hexagonal,'' Trabajo Terminal No. 20080040, Escuela Superior de Cómputo, Instituto Politécnico Nacional, México, 2009.
+Se define el espacio de fases discreto de un autómata celular finito como un grafo dirigido, donde cada vértice representa una configuración global posible $\mathcal{C} \in \Sigma^{\mathbb{Z}^d}$ y cada arista dirigida indica una transición lícita unívoca dictada por la función $G$. Dado que para una retícula finita el número total de configuraciones es discreto y acotado a $|\Sigma|^N$ (donde $N$ es el número total de células), el determinismo de la función de transición garantiza que cualquier trayectoria temporal eventualmente cruzará por una configuración previamente visitada, ingresando a un ciclo invariante \cite{Wuensche1998}.
 
-\end{thebibliography}
+Un estado invariante, o punto fijo asintótico, se formaliza como una configuración $\mathcal{C}_f$ que permanece inalterada bajo la aplicación del mapeo global:
+\begin{equation}
+    G(\mathcal{C}_f) = \mathcal{C}_f
+\end{equation}
+
+De manera análoga, se define un ciclo límite de periodo $p$ como una secuencia cerrada de $p$ configuraciones distintas, donde el sistema retorna iterativamente a su estado inicial tras $p$ pasos de tiempo discretos:
+\begin{equation}
+    G^p(\mathcal{C}_c) = \mathcal{C}_c \quad \text{con} \quad p \geq 2
+\end{equation}
+
+El conjunto de configuraciones que conforman el punto fijo o el ciclo límite se denomina \textbf{atractor}. Asimismo, la \textit{cuenca de atracción} se define axiomáticamente como el conjunto de todas las configuraciones iniciales cuyas trayectorias transitorias (pre-periodos) convergen asintóticamente hacia dicho atractor. El estudio de estos sumideros topológicos permite determinar la disipación de información en el sistema celular.
+
+\begin{figure}[h]
+\centering
+% TODO: Insertar diagrama de grafo dirigido que ilustre un espacio de fases discreto. Debe mostrar diversas trayectorias transitorias (nodos conectados por flechas direccionales) convergiendo hacia un punto fijo central y hacia un ciclo límite de periodo mayor a 1.
+\caption{Representación esquemática del espacio de fases discreto. Se observan los estados transitorios que conforman las cuencas de atracción convergiendo en estados estables y ciclos límite.}
+\label{fig:espacio_fases}
+\end{figure}
+
+\subsection{Formalización de la clasificación de Wolfram}
+
+A partir del análisis fenomenológico del espacio de fases y la evolución espacio-temporal a partir de configuraciones iniciales aleatorias, se establece la taxonomía universal propuesta por Stephen Wolfram \cite{Wolfram2002}. Esta clasificación divide el dominio algorítmico de los autómatas celulares en cuatro clases cualitativas de comportamiento global:
+
+\begin{itemize}
+    \item \textbf{Clase I (Convergencia homogénea):} La evolución del sistema converge rápidamente hacia un atractor espacialmente homogéneo, equivalente a un punto fijo trivial (usualmente el estado quiescente absoluto). Cualquier configuración de información inicial es destruida en un tiempo finito.
+    \item \textbf{Clase II (Estructuras periódicas):} El sistema evoluciona hacia un conjunto de estructuras espacialmente separadas y periódicas (ciclos límite de periodo corto). La propagación de la información intercelular queda estrictamente acotada a una vecindad confinada.
+    \item \textbf{Clase III (Comportamiento caótico):} La trayectoria conduce a patrones pseudoaleatorios y aperiódicos continuos. Las perturbaciones locales se propagan indefinidamente a lo largo del espacio, generando una extrema sensibilidad a las condiciones iniciales, en un fenómeno análogo a la emergencia de atractores extraños.
+    \item \textbf{Clase IV (Comportamiento complejo):} El espacio celular exhibe una coexistencia altamente correlacionada de orden y caos, estabilizándose en una frontera de transición crítica. Se caracteriza por la emergencia de estructuras localizadas, persistentes y espacialmente móviles (\textit{gliders}) que interaccionan y colisionan de forma no trivial.
+\end{itemize}
+
+Para los propósitos de la presente investigación, enfocada en la computabilidad y el análisis de dinámicas como \textit{Spiral} y \textit{Beehive}, el interés axiomático recae de forma exclusiva sobre la \textbf{Clase IV}. Es únicamente en este régimen analítico donde la información codificada en estructuras móviles no se disipa de inmediato (como en las Clases I y II) ni se degrada en ruido inoperable (Clase III). La preservación de trayectorias en los atractores de la Clase IV asegura colisiones deterministas, proveyendo así la base teórica indispensable para emular lógica booleana y síntesis de operadores de cómputo universal.
+
+
