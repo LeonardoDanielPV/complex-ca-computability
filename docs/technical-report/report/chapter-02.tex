@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%% chapter-02.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Capítulo 2: Teoría Formal de Autómatas Celulares y Espacios Discretos
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Teoría formal de autómatas celulares y espacios discretos}
+\label{cap:teoria_formal}
+
+\abstract*{Este capítulo establece el marco matemático fundamental sobre el cual se sustenta la dinámica de los autómatas celulares. A partir de conceptos de la teoría de conjuntos, topología discreta y álgebra geométrica, se construyen las definiciones axiomáticas del espacio celular, los alfabetos finitos, las vecindades y las funciones de transición. Posteriormente, se abordan las propiedades topológicas que permiten el modelado de la computación sobre arquitecturas no convencionales, dotando de formalismo a las simulaciones de sistemas complejos.}
+
+\abstract{Este capítulo establece el marco matemático fundamental sobre el cual se sustenta la dinámica de los autómatas celulares. A partir de conceptos de la teoría de conjuntos, topología discreta y álgebra geométrica, se construyen las definiciones axiomáticas del espacio celular, los alfabetos finitos, las vecindades y las funciones de transición. Posteriormente, se abordan las propiedades topológicas que permiten el modelado de la computación sobre arquitecturas no convencionales, dotando de formalismo a las simulaciones de sistemas complejos.}
+
+\section{Fundamentación conjuntista y topológica del espacio celular}
+\label{sec:fundamentacion}
+
+Para formalizar el estudio de la computación en sistemas dinámicos discretos, es imperativo establecer la estructura geométrica base sobre la cual operará el sistema. El análisis del comportamiento computacional y de la emergencia de partículas requiere que el medio físico (o su abstracción matemática) esté rigurosamente delimitado bajo estrictos criterios conjuntistas.
+
+
+\subsection{Definición del espacio y la unidad celular}
+Se define el espacio celular como una retícula geométrica infinita y multidimensional, denotada matemáticamente por el conjunto $\mathbb{Z}^d$, donde $\mathbb{Z}$ representa el conjunto de los números enteros y $d \in \mathbb{N}$ determina la dimensionalidad del espacio analizado \cite{Kari2005}.
+
+Dentro de esta retícula, se define formalmente el concepto de \textbf{célula} como la unidad mínima indivisible del modelo de autómata celular. Cada célula posee una posición vectorial discreta e inmutable en el espacio. Sea $c$ una célula cualquiera en el espacio $d$-dimensional, su ubicación espacial exacta está dada por un vector $\vec{v} \in \mathbb{Z}^d$, tal que:
+\begin{equation}
+    \vec{v} = (x_1, x_2, \dots, x_d) \quad \text{donde} \quad x_i \in \mathbb{Z}
+\end{equation}
+
+Para los propósitos de modelado del presente trabajo, se hará especial énfasis en el análisis del caso bidimensional ($d = 2$). En un espacio bidimensional ortogonal $\mathbb{Z}^2$, la posición de cada célula se simplifica a un par ordenado de coordenadas discretas $(i, j)$. 
+
+\subsection{Definición axiomática de autómata celular}
+Un autómata celular (AC) es un sistema dinámico y discreto en el espacio, el tiempo y el estado. Es un modelo que evoluciona mediante pasos de tiempo sincrónicos donde cada elemento evalúa su estado futuro basándose en su entorno local \cite{Wolfram2002}. Matemáticamente, se define como una cuádrupla funcional:
+\begin{equation}
+    AC = (\mathcal{L}, \Sigma, \mathcal{N}, \delta)
+\end{equation}
+donde:
+\begin{itemize}
+    \item $\mathcal{L}$ es el espacio subyacente, constituido por la retícula de dimensión finita (comúnmente $\mathbb{Z}^d$).
+    \item $\Sigma$ es el alfabeto o conjunto finito de estados elementales.
+    \item $\mathcal{N}$ es la vecindad o subconjunto finito de desplazamientos vectoriales adyacentes a la célula analizada.
+    \item $\delta$ es la función de transición local que proyecta el estado actual de la vecindad al estado futuro de la célula central.
+\end{itemize}
+
+\subsection{Alfabetos finitos y el espacio de estados}
+La dinámica de la información en un autómata celular se manifiesta a través de la alteración sistemática de los valores asignados a cada coordenada espacial. Se define formalmente un conjunto finito de estados discretos, denominado alfabeto y denotado por el símbolo $\Sigma$. Este conjunto contiene íntegramente todos los posibles estados mutuamente excluyentes que una célula $c \in \mathbb{Z}^d$ puede adoptar en un instante de tiempo arbitrario $t$.
+
+Por definición, el alfabeto cumple con la propiedad de cardinalidad finita $|\Sigma| = k$, para todo $k \in \mathbb{N}$ tal que $k \geq 2$. En su forma más reducida y elemental, particularmente en los dominios de la computación lógica clásica y la electrónica digital, el alfabeto empleado es el binario, donde $\Sigma = \{0, 1\}$. 
+
+Adicionalmente a la cardinalidad, se establece la existencia obligatoria de un estado quiescente o estado de reposo absoluto $q_0 \in \Sigma$. El estado quiescente posee la característica de equilibrio local: si una célula arbitraria y la totalidad de sus células adyacentes determinadas por la vecindad $\mathcal{N}$ se encuentran concurrentemente en el estado $q_0$ en el tiempo $t$, la célula central evaluada permanecerá forzosamente en el estado $q_0$ para el paso temporal siguiente $t+1$.
+
+\subsection{Formalización métrica de vecindades acotadas}
+El flujo y procesamiento de la información en un autómata celular están estrictamente limitados y supeditados a interacciones puramente locales. Para formalizar mecánicamente este principio de localidad, se definen matemáticamente los subconjuntos finitos adyacentes que influyen sobre la función de transición de una célula central.
+
+Una vecindad genérica $\mathcal{N}$ de tamaño $n$ se define como un conjunto finito y ordenado de vectores de desplazamiento relativo desde el origen:
+\begin{equation}
+    \mathcal{N} = \{\vec{v}_1, \vec{v}_2, \dots, \vec{v}_n\} \quad \text{donde} \quad \vec{v}_i \in \mathbb{Z}^d
+\end{equation}
+En consecuencia, para una célula central ubicada en la posición absoluta $\vec{c} \in \mathbb{Z}^d$, el conjunto coordenado de todas sus células vecinas se obtiene mediante la suma vectorial homóloga:
+\begin{equation}
+    V(\vec{c}) = \{\vec{c} + \vec{v}_i \mid \vec{v}_i \in \mathcal{N}\}
+\end{equation}
+
+Dentro de la retícula estándar bidimensional $\mathbb{Z}^2$, las configuraciones topológicas más aplicadas se delimitan utilizando métricas de distancia discreta \cite{Adamatzky1994}. La vecindad de Moore de radio $r=1$ comprende a las 8 células adyacentes (delimitadas por la distancia de Chebyshev infinita normada a 1), mientras que la vecindad de von Neumann incluye exclusivamente a las 4 células ortogonales (determinadas por la distancia de Manhattan igual a 1).
+
+\subsection{El autómata celular hexagonal}
+
+
+Como punto medular de esta investigación, se introduce una variante topológica de profundo interés analítico: el \textbf{autómata celular hexagonal}. A diferencia de la retícula cartesiana tradicional $\mathbb{Z}^2$ donde cada célula es modelada como un polígono cuadrangular y comparte límites asimétricos (bordes directos frente a vértices diagonales) con sus 8 vecinos de Moore, la teselación hexagonal plana permite dividir uniformemente el espacio mediante polígonos regulares de seis lados.
+
+Esta propiedad geométrica dota al sistema de una simetría isotrópica inmensamente superior, al garantizar que la distancia proyectada desde el centroide de una célula al centroide de todos y cada uno de sus vecinos inmediatos sea matemáticamente idéntica.
+
+En un autómata celular hexagonal, se define el espacio $\mathcal{L}_{hex}$ como una malla isomórfica a una red reticular triangular bidimensional \cite{Basurto2009}. La vecindad básica, equivalente a un radio $r=1$, se compone estrictamente de las seis células adyacentes que comparten de forma colineal una arista con la célula central. 
+
+Formalmente, si se aplica una inmersión de esta red hexagonal sobre un sistema de coordenadas oblicuas bidimensionales $(x, y)$, la vecindad canónica hexagonal $\mathcal{N}_{hex}$ se modela axiomáticamente mediante el conjunto de los seis vectores de desplazamiento relativo:
+\begin{equation}
+    \mathcal{N}_{hex} = \{ (1,0), (0,1), (-1,1), (-1,0), (0,-1), (1,-1) \}
+\end{equation}
+
+El uso del sistema de coordenadas oblicuas permite incrustar la topología de base 6 dentro de los límites matemáticos y computacionales de arreglos matriciales discretos. Esta estructura topológica es fundamental en la disciplina de simulación no convencional, debido a que su uniformidad reduce los sesgos angulares (anisotropía) durante la propagación dinámica de información y modelado de trayectorias de partículas complejas.
+
+% TODO: Insertar diagrama comparativo entre la retícula de cuadrícula (con vecindad de Moore/von Neumann) y la retícula hexagonal. Se debe resaltar la igualdad de distancias desde la célula central hacia sus vecinos en la proyección hexagonal.
+\begin{figure}[h]
+\centering
+% \includegraphics[width=0.8\textwidth]{figuras/comparativa_reticulas.png}
+\caption{Comparativa geométrica topológica entre el espacio de cuadrícula $\mathbb{Z}^2$ asimétrica y la teselación celular hexagonal isótropa. Se detallan los vectores de desplazamiento $\vec{v}_i$ que definen la vecindad adyacente $\mathcal{N}_{hex}$.}
+\label{fig:topologia_hexagonal}
+\end{figure}
+
+
+\section{Funciones de transición y evolución espacio-temporal}
+\label{sec:funciones_transicion}
+
+Una vez establecida la base estructural del espacio celular en la sección anterior, es necesario formalizar el mecanismo que rige el cambio de estado de las células a través del tiempo. La transición de una configuración estática a un sistema dinámico se logra mediante la definición de reglas de evolución locales, las cuales determinan el comportamiento emergente del autómata celular en una escala global.
+
+\subsection{La función de transición local}
+
+La dinámica de un autómata celular está gobernada por una función de transición local $\delta$, la cual actúa como un mapeo determinista entre el estado actual de la vecindad de una célula y su estado futuro. Sea $\sigma_c^t \in \Sigma$ el estado de una célula $c$ en el instante de tiempo $t$. La evolución de dicha célula se define formalmente como:
+
+\begin{equation}
+    \sigma_c^{t+1} = \delta(\sigma_{v_1}^t, \sigma_{v_2}^t, \dots, \sigma_{v_n}^t)
+\end{equation}
+
+donde $(\sigma_{v_1}^t, \dots, \sigma_{v_n}^t)$ representa la configuración de estados de las células contenidas en la vecindad $\mathcal{N}$ en el tiempo $t$. Es fundamental subrayar que la función $\delta$ es idéntica para todas las células de la retícula y permanece invariante ante traslaciones espaciales y temporales \cite{Kari2005}. Esta uniformidad garantiza que las leyes "físicas" del universo digital sean consistentes en todo el dominio $\mathbb{Z}^d$.
+
+\subsection{Configuraciones globales y el mapeo paralelo}
+
+Para describir el estado del sistema en su totalidad, se introduce el concepto de \textbf{configuración global} $\mathcal{C}$, la cual se define como una función que asigna un estado del alfabeto a cada célula de la retícula: $\mathcal{C}: \mathbb{Z}^d \to \Sigma$. El conjunto de todas las configuraciones posibles se denomina espacio de configuraciones y se denota por $\Sigma^{\mathbb{Z}^d}$.
+
+La evolución global del autómata celular se formaliza mediante el mapeo de configuración global $G: \Sigma^{\mathbb{Z}^d} \to \Sigma^{\mathbb{Z}^d}$. Este mapeo aplica simultáneamente la función de transición local $\delta$ en cada posición de la retícula, de modo que la transición de una configuración $\mathcal{C}_t$ a $\mathcal{C}_{t+1}$ ocurre de forma síncrona y paralela:
+
+\begin{equation}
+    \mathcal{C}_{t+1} = G(\mathcal{C}_t)
+\end{equation}
+
+Esta transición de lo estático (la configuración individual) a lo dinámico (la secuencia de configuraciones) permite observar la propagación de información y la formación de estructuras complejas. En el caso de los autómatas celulares complejos, este mapeo global es el que da lugar a la fenomenología de partículas o \textit{gliders}, los cuales pueden interpretarse como entidades computacionales que se desplazan sobre el espacio de estados \cite{Wolfram2002}.
+
+\subsection{Discretización del tiempo y trayectoria evolutiva}
+
+El tiempo en este modelo se considera una variable discreta $t \in \mathbb{N} \cup \{0\}$. La evolución completa del sistema partiendo de una configuración inicial $\mathcal{C}_0$ se describe mediante la órbita o trayectoria:
+
+\begin{equation}
+    \mathcal{C}_0, G(\mathcal{C}_0), G(G(\mathcal{C}_0)), \dots, G^t(\mathcal{C}_0)
+\end{equation}
+
+En la práctica computacional, estas evoluciones suelen representarse mediante diagramas espacio-temporales, donde una dimensión representa el espacio y otra el tiempo. Para el caso bidimensional ($d=2$), la evolución se visualiza como una sucesión de capas o fotogramas (\textit{frames}), permitiendo el análisis topológico de las colisiones entre partículas, las cuales constituyen la base para la implementación de compuertas lógicas en sistemas complejos.
+
+\begin{figure}[h]
+\centering
+% TODO: [Diagrama esquemático que muestre la aplicación de la función delta sobre una vecindad para producir un estado en t+1, y cómo esto se extiende al mapeo global G entre dos configuraciones completas]
+\caption{Representación del mapeo de estados locales a la evolución de la configuración global del sistema.}
+\label{fig:mapeo_global}
+\end{figure}
+
+% ----------------------------------------------------------------------
+% Bibliografía del Capítulo (Formato IEEE)
+% ----------------------------------------------------------------------
+\begin{thebibliography}{99.}%
+
+\bibitem{Kari2005}
+J. Kari, ``Theory of cellular automata: A survey,'' \textit{Theoretical Computer Science}, vol. 334, no. 1-3, pp. 3--33, 2005.
+
+\bibitem{Wolfram2002}
+S. Wolfram, \textit{A New Kind of Science}. Champaign, IL, USA: Wolfram Media, 2002.
+
+\bibitem{Adamatzky1994}
+A. Adamatzky, \textit{Identification of Cellular Automata}. Londres, Reino Unido: Taylor \& Francis, 1994.
+
+\bibitem{Basurto2009}
+R. Basurto Flores y P. A. León Hernández, ``Computación basada en reacción de partículas en un autómata celular hexagonal,'' Trabajo Terminal No. 20080040, Escuela Superior de Cómputo, Instituto Politécnico Nacional, México, 2009.
+
+\end{thebibliography}

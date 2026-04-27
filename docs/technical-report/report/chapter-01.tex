@@ -1,0 +1,91 @@
+%%%%%%%%%%%%%%%%%%%%% chapter-01.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Capítulo 1: Preliminares y planteamiento del problema computacional
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Preliminares y planteamiento del problema computacional}
+\label{cap:preliminares} % Etiqueta única para referencias cruzadas
+
+\abstract*{Este capítulo establece los fundamentos axiomáticos y el marco fenomenológico de la investigación sobre la computabilidad en autómatas celulares complejos. Se aborda la computación no convencional desde la perspectiva de los sistemas dinámicos discretos, definiendo formalmente el objeto de estudio en la intersección de la topología discreta, la reversibilidad y la computabilidad universal. Asimismo, se delimitan las propiedades de emergencia esperadas en reglas específicas de evolución, como \textit{Spiral} y \textit{Beehive}, y se plantean los objetivos analíticos y sintéticos que regirán la demostración formal del modelo matemático y computacional propuesto.}
+
+\abstract{Este capítulo establece los fundamentos axiomáticos y el marco fenomeno- lógico de la investigación sobre la computabilidad en autómatas celulares complejos. Se aborda la computación no convencional desde la perspectiva de los sistemas dinámicos discretos, definiendo formalmente el objeto de estudio en la intersección de la topología discreta, la reversibilidad y la computabilidad universal. \newline\indent
+Asimismo, se delimitan las propiedades de emergencia esperadas en reglas específicas de evolución, como \textit{Spiral} y \textit{Beehive}, y se plantean los objetivos analíticos y sintéticos que regirán la demostración formal del modelo matemático y computacional propuesto.}
+
+\section{Contexto topológico y fenomenológico}
+\label{sec:contexto}
+
+La teoría de autómatas celulares proporciona un marco matemático robusto para el estudio de sistemas dinámicos discretos donde la complejidad emerge de interacciones estrictamente locales. Históricamente concebidos por von Neumann y Ulam como modelos abstractos de autorreplicación biológica \cite{vonNeumann1966}, estos sistemas han evolucionado hacia un paradigma fundamental dentro de la computación no convencional.
+
+En este contexto, la computación trasciende el modelo clásico de la Máquina de Turing de estados centralizados, distribuyendo la capacidad de procesamiento sobre una malla espacial (topología). Cada unidad del espacio, denominada \textbf{célula}, opera de manera síncrona y paralela, evaluando una función de transición compartida a lo largo de todo el arreglo. Es posible observar que, bajo ciertas configuraciones y reglas de evolución, la dinámica global del autómata pierde su aparente simplicidad para albergar el tránsito y la manipulación de información, dando lugar a fenómenos de computación universal \cite{Wolfram2002}.
+
+\section{Definición formal del objeto de estudio}
+\label{sec:objeto_estudio}
+
+Para analizar la computabilidad dentro de un espacio bidimensional, es imperativo establecer las bases que rigen su dinámica. Se define un autómata celular complejo como un sistema cuya evolución a lo largo del tiempo discreto exhibe estructuras coherentes y patrones no triviales, situándose en la frontera entre el orden periódico y el caos puro.
+
+El objeto de estudio central de este trabajo se focaliza en la delimitación de una frontera de transición computacional. Dicha frontera se encuentra determinada por tres propiedades fundamentales:
+
+\begin{enumerate}
+    \item \textbf{Complejidad topológica:} La capacidad del espacio celular para soportar la existencia de \textit{gliders} (partículas o estructuras móviles) que se desplazan de manera periódica sin perder su integridad morfológica \cite{Wuensche1998}.
+    \item \textbf{Reversibilidad frente a irreversibilidad:} La evaluación del sistema respecto a la conservación de la información. Mientras que un sistema reversible asegura una biyección en sus mapeos de estados, las dinámicas complejas a menudo requieren de propiedades irreversibles para colapsar información, aniquilar estados u operar como compuertas lógicas universales \cite{Toffoli1987}.
+    \item \textbf{Computabilidad universal:} El grado en el cual un conjunto de colisiones predecibles puede emular funcionalmente a cualquier función booleana discreta y, por extensión, operaciones algorítmicas completas.
+\end{enumerate}
+
+Para fines de ilustración fenomenológica, se modela el vecindario y su transición de estados geométricos en el siguiente diagrama.
+
+% TODO: Insertar diagrama que muestre un ejemplo de vecindad bidimensional (por ejemplo, Moore o Hexagonal) y cómo los estados de las células vecinas convergen en el tiempo t+1 para definir el estado de la célula central.
+\begin{figure}[h]
+\centering
+% \includegraphics[width=0.7\textwidth]{ruta/al/archivo/vecindad_transicion.png}
+\caption{Representación geométrica de una vecindad bidimensional y el flujo de información durante la evaluación de la función de transición de los estados para el paso temporal discreto $t \to t+1$.}
+\label{fig:vecindad_transicion}
+\end{figure}
+
+\section{Delimitación axiomática e hipótesis fundamental}
+\label{sec:hipotesis}
+
+La aproximación teórica abordada en el presente documento requiere la fijación de reglas de transición particulares que restrinjan el comportamiento global del sistema a un universo analizable. Se seleccionan dinámicas asociadas a autómatas celulares con alfabetos finitos que exhiben comportamiento complejo, específicamente enfocando el análisis en dominios matemáticos equivalentes a las reglas conocidas empíricamente como \textit{Spiral} y \textit{Beehive}.
+
+\subsection{Hipótesis}
+La hipótesis fundamental del Trabajo Terminal establece que \textit{es matemáticamente posible modelar y mapear funciones computacionales complejas utilizando las propiedades emergentes de colisión y aniquilación de estructuras viajeras (gliders) generadas por las reglas de transición no reversibles de los sistemas Spiral y Beehive}. 
+
+De lo anterior se axiomatiza que, si es posible predecir el vector de desplazamiento de la partícula y su resultante post-colisión, entonces el conjunto de reglas del autómata celular es sintéticamente equipotente a un circuito combinacional discreto.
+
+\section{Objetivos analíticos y sintéticos}
+\label{sec:objetivos}
+
+Para demostrar empírica y matemáticamente la validez de la hipótesis propuesta, la investigación se divide en objetivos de análisis del sistema y objetivos de síntesis lógica:
+
+\subsection{Criterios analíticos}
+\begin{itemize}
+    \item \textbf{Caracterización del espacio de estados:} Demostrar algebraicamente las propiedades de estabilidad y periodo de las estructuras emergentes en los modelos seleccionados.
+    \item \textbf{Isomorfismo espacial:} Establecer las equivalencias topológicas necesarias para garantizar que una topología hexagonal pueda ser correctamente mapeada y simulada dentro de una matriz ortogonal de $\mathbb{Z}^2$ sin pérdida de propiedades computacionales.
+\end{itemize}
+
+\subsection{Criterios sintéticos}
+\begin{itemize}
+    \item \textbf{Lógica de colisiones:} Documentar el catálogo formal de reacciones generadas tras la intersección de dos o más \textit{gliders} en trayectorias calculadas.
+    \item \textbf{Construcción de operadores:} Ensamblar teóricamente, y posteriormente verificar a través del simulador a desarrollar en C/C++, la construcción de compuertas lógicas universales (e.g., AND, NOT) sustentadas exclusivamente por la colisión determinista de partículas dentro del arreglo celular.
+\end{itemize}
+
+De esta manera, el presente proyecto de titulación busca sentar una base matemática formal que valide el uso de dinámicas naturales discretas como mecanismos viables para la ingeniería del procesamiento de información.
+
+% ----------------------------------------------------------------------
+% Bibliografía del Capítulo (Formato IEEE)
+% ----------------------------------------------------------------------
+\begin{thebibliography}{99.}%
+
+\bibitem{vonNeumann1966}
+J. von Neumann y A. W. Burks, \textit{Theory of Self-Reproducing Automata}. Urbana, IL, USA: University of Illinois Press, 1966.
+
+\bibitem{Wolfram2002}
+S. Wolfram, \textit{A New Kind of Science}. Champaign, IL, USA: Wolfram Media, 2002.
+
+\bibitem{Wuensche1998}
+A. Wuensche, ``Genomic regulation, pattern formation and spatial chaos in continuous media,'' en \textit{Artificial Life VI: Proc. of the Sixth Int. Conf. on Artificial Life}, Cambridge, MA, USA: MIT Press, 1998, pp. 246--254.
+
+\bibitem{Toffoli1987}
+T. Toffoli y N. Margolus, \textit{Cellular Automata Machines: A New Environment for Modeling}. Cambridge, MA, USA: MIT Press, 1987.
+
+\end{thebibliography}

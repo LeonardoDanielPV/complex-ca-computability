@@ -1,0 +1,2 @@
+docs/technical-report/report/output/*
+!docs/technical-report/report/output/*.pdf
