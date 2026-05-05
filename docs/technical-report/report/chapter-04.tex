@@ -4,7 +4,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Isomorfismos y Transformaciones Topológicas entre Espacios Celulares}
+\chapter{Isomorfismos y transformaciones topológicas entre espacios celulares}
 \label{chap:isomorfismos}
 
 \abstract*{En este capítulo se establece la base formal para la equivalencia entre topologías de red, centrando el análisis en la transición de teselaciones hexagonales hacia estructuras ortogonales. Se definen los homomorfismos espaciales necesarios para preservar la dinámica de las reglas de transición, garantizando que las propiedades de computabilidad analizadas en capítulos previos no se vean alteradas por la representación en memoria. A través de una axiomatización geométrica y el desarrollo de ecuaciones de transformación afín, se demuestra la viabilidad del mapeo submatricial de $2 \times 2$ como solución a la discontinuidad de los sistemas de coordenadas discretos.}
@@ -74,3 +74,43 @@ La métrica de distancia entre dos celdas $c_1(x_1, y_1, z_1)$ y $c_2(x_2, y_2, 
 Esta métrica es fundamental para el análisis de propagación de \textit{gliders} que se abordará en la Parte III, ya que permite predecir la trayectoria de la información sin las distorsiones métricas de las diagonales euclidianas.
 
 
+
+\section{Homomorfismos espaciales y condiciones de equivalencia reticular}
+\label{sec:homomorfismos_espaciales}
+
+Tras haber definido las propiedades geométricas y la métrica de la teselación hexagonal en la Sección \ref{sec:axiomatizacion_hexagonal}, es imperativo establecer las bases teóricas que justifican la traslación de este continuo discretizado hacia una representación puramente matricial. En el presente apartado se introduce la teoría topológica que legitima el mapeo de un espacio celular a otro, garantizando que la dinámica de la información, la función de transición local $\delta$ y la computabilidad analizadas en el Capítulo \ref{cap:teoria_formal} permanezcan inalteradas bajo la nueva morfología espacial.
+
+\subsection{Isomorfismos sobre grafos reticulares infinitos}
+\label{subsec:isomorfismos_grafos}
+
+Para formalizar la equivalencia topológica entre dos espacios celulares distintos, es preciso abstraer la red subyacente empleando la teoría de grafos. Sea $G = (V, E)$ un grafo reticular infinito, donde el conjunto de vértices $V$ representa los índices espaciales de las celdas y el conjunto de aristas $E$ define las relaciones de adyacencia estipuladas por la vecindad axiomática.
+
+Bajo esta premisa, se denota como $G_H = (V_H, E_H)$ al grafo derivado de la teselación hexagonal gobernado por la vecindad $\mathcal{N}_H$, y como $G_Q = (V_Q, E_Q)$ al grafo correspondiente a la retícula ortogonal $\mathbb{Z}^2$ \eqref{eq:espacio_celular} % TODO: Verificar etiqueta del Capítulo 2 para la definición Z^2
+. Un homomorfismo espacial entre ambas topologías se establece a través de una función de mapeo $\Phi$ que proyecta los elementos de un dominio sobre el otro preservando sus estructuras de conectividad.
+
+No obstante, debido a la diferencia intrínseca en los grados de los vértices (grado 6 uniforme en $G_H$ frente a grado 4 u 8 en $G_Q$), resulta matemáticamente imposible establecer un isomorfismo biyectivo trivial de cardinalidad uno a uno entre celdas individuales que conserve de manera isótropa las distancias \cite{Toffoli1987}. Por consiguiente, se define un mapeo biyectivo hacia subredes, donde cada vértice $v \in V_H$ se asocia unívocamente a un subgrafo inducido $B \subset V_Q$. Para que el sistema celular se considere topológicamente equivalente y capaz de simular la misma física discreta, la función $\Phi$ debe cumplir la condición de adyacencia: si $(u, v) \in E_H$, entonces debe existir una adyacencia efectiva y computable entre los bloques de subconjuntos $\Phi(u)$ y $\Phi(v)$ en el dominio ortogonal.
+
+\subsection{Teorema de recubrimiento y descomposición celular ortogonal}
+\label{subsec:teorema_recubrimiento}
+
+El núcleo analítico de la transformación geométrica propuesta en este documento reside en el axioma de equivalencia espacial mediante bloques matriciales de cardinalidad superior. Se establece la partición cuadrangular extendida como la solución formal a la discontinuidad geométrica descrita anteriormente.
+
+Se formaliza el axioma de que el área, la capacidad de almacenamiento de estado y, crucialmente, las direcciones de adyacencia de una celda hexagonal $h \in V_H$, pueden ser representadas de forma isomórfica mediante un bloque ortogonal contiguo de celdas cuadradas. Específicamente, el mapeo $\Phi(h)$ proyecta la celda sobre una subred $B_{2\times 2}$ definida como:
+\begin{equation}
+    B_{2\times 2} = \left\{ c_{i,j}, c_{i+1,j}, c_{i,j+1}, c_{i+1,j+1} \right\} \subset V_Q
+    \label{eq:bloque_2x2}
+\end{equation}
+
+Esta relación biyectiva, donde un único hexágono encapsula la información espacial de cuatro cuadrados subyacentes, responde a una necesidad estrictamente topológica. Como es posible observar, una celda ortogonal individual posee únicamente 4 aristas disponibles (vecindad de Von Neumann), lo cual es topológicamente deficiente para enrutar de manera simétrica las 6 trayectorias de propagación de partículas abordadas en la dinámica de colisiones \cite{Basurto2009}. 
+
+Al expandir la unidad fundamental de cómputo a un bloque de $2 \times 2$, el perímetro externo de esta nueva meta-celda expone exactamente 8 segmentos ortogonales. Este incremento en los grados de libertad perimetrales garantiza el isomorfismo geométrico: 6 de las caras del bloque cuadrangular se asignan biyectivamente a las 6 vecindades hexagonales evaluadas por la métrica \eqref{eq:distancia_hexagonal}, asegurando que ninguna trayectoria se superponga prematuramente.
+
+% TODO: Insertar diagrama conceptual del mapeo. Debe mostrar un hexágono abstracto superpuesto transformándose en un bloque de 2x2 cuadrados, ilustrando cómo las 6 aristas del hexágono se asientan sobre el perímetro de los 4 cuadrados.
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.7\textwidth]{figuras/isomorfismo_2x2.png}
+    \caption{Equivalencia topológica: Mapeo isomórfico suprayectivo entre una celda hexagonal con grado de adyacencia 6 y una partición cuadrangular de $2 \times 2$.}
+    \label{fig:isomorfismo_2x2}
+\end{figure}
+
+Esta descomposición celular asegura además que el modelo computacional derivado en la Sección 3.5 posea un tiempo de indexación en memoria estrictamente $\mathcal{O}(1)$, eludiendo las aberraciones de redondeo propias de las coordenadas de punto flotante y conservando el rigor exigido por la teoría clásica de autómatas celulares \cite{Kari2005}.
