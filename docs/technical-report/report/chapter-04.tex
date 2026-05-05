@@ -1,8 +1,76 @@
 %%%%%%%%%%%%%%%%%%%%% chapter-04.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Capítulo 4: Isomorfismos y Transformaciones Topológicas entre Espacios Celulares
+% Capítulo 4: Isomorfismos y transformaciones topológicas entre espacios celulares
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Isomorfismos y transformaciones topológicas entre espacios celulares}
-\label{cap:isomorfismos_transformaciones}
+\chapter{Isomorfismos y Transformaciones Topológicas entre Espacios Celulares}
+\label{chap:isomorfismos}
+
+\abstract*{En este capítulo se establece la base formal para la equivalencia entre topologías de red, centrando el análisis en la transición de teselaciones hexagonales hacia estructuras ortogonales. Se definen los homomorfismos espaciales necesarios para preservar la dinámica de las reglas de transición, garantizando que las propiedades de computabilidad analizadas en capítulos previos no se vean alteradas por la representación en memoria. A través de una axiomatización geométrica y el desarrollo de ecuaciones de transformación afín, se demuestra la viabilidad del mapeo submatricial de $2 \times 2$ como solución a la discontinuidad de los sistemas de coordenadas discretos.}
+
+\abstract{En este capítulo se establece la base formal para la equivalencia entre topologías de red, centrando el análisis en la transición de teselaciones hexagonales hacia estructuras ortogonales. Se definen los homomorfismos espaciales necesarios para preservar la dinámica de las reglas de transición, garantizando que las propiedades de computabilidad analizadas en capítulos previos no se vean alteradas por la representación en memoria. A través de una axiomatización geométrica y el desarrollo de ecuaciones de transformación afín, se demuestra la viabilidad del mapeo submatricial de $2 \times 2$ como solución a la discontinuidad de los sistemas de coordenadas discretos.}
+
+\section{Axiomatización geométrica de las teselaciones hexagonales y métricas planares}
+\label{sec:axiomatizacion_hexagonal}
+
+La discretización del plano euclidiano $\mathbb{R}^2$ mediante polígonos regulares permite la construcción de espacios celulares donde la adyacencia es uniforme. A diferencia de la retícula estándar definida en la Sección 2.1 \eqref{eq:espacio_celular} % TODO: Verificar etiqueta del capítulo 2 sobre definición de espacios celulares
+, la teselación hexagonal se caracteriza por poseer el mayor grado de simetría axial en el plano, eliminando las ambigüedades de vecindad presentes en las mallas cuadrangulares (donde se debe distinguir entre adyacencia de arista y de vértice).
+
+\subsection{Representación paramétrica de la celda hexagonal regular}
+\label{subsec:parametrizacion}
+
+Se define una celda hexagonal regular $H$ como el conjunto de puntos en el plano acotados por seis segmentos de igual longitud. Sea $s$ la longitud del lado del hexágono, el cual en el modelo unitario se considera $s=1$. Las propiedades geométricas fundamentales que rigen la posición de los vértices y la comunicación entre celdas dependen de dos constantes: el radio circunscrito $R$ y el apotema $a$.
+
+Dado un centro $C = (x_c, y_c)$, los vértices $V_k$ para $k \in \{0, \dots, 5\}$ se determinan mediante las ecuaciones paramétricas:
+\begin{equation}
+    V_k = \left( x_c + R \cdot \cos\left( \frac{k\pi}{3} \right), y_c + R \cdot \sin\left( \frac{k\pi}{3} \right) \right)
+    \label{eq:vertices_hexagono}
+\end{equation}
+
+Es posible observar que, por la naturaleza del polígono regular, $R = s$. El apotema, que representa la distancia mínima del centro al punto medio de cada arista, se define como:
+\begin{equation}
+    a = \frac{\sqrt{3}}{2} s
+    \label{eq:apotema}
+\end{equation}
+
+Esta configuración asegura que cualquier punto $P \in \mathbb{R}^2$ pueda ser mapeado unívocamente a una celda hexagonal mediante un proceso de cuantización espacial, similar al análisis de complejidad de localización discutido en la Sección \ref{sec:complejidad_renderizado}.
+
+\subsection{Sistemas de coordenadas afines para mallas de grado seis}
+\label{subsec:coordenadas_afines}
+
+Para la indexación lógica de las celdas en un autómata celular complejo, el uso de coordenadas cartesianas ortogonales resulta insuficiente debido al desfase intrínseco de las filas. En su lugar, se formaliza el uso de sistemas de coordenadas afines. 
+
+Se define el sistema de coordenadas axiales $(q, r)$, donde los ejes se sitúan a $60^\circ$ de separación. No obstante, para simplificar el cálculo de distancias y algoritmos de colisión de partículas \cite{Basurto2009}, se prefiere la proyección en coordenadas cúbicas $(x, y, z)$ restringidas al plano:
+\begin{equation}
+    x + y + z = 0
+    \label{eq:restriccion_cubica}
+\end{equation}
+
+Bajo esta axiomatización, cada celda hexagonal se identifica como un vector en $\mathbb{Z}^3$. Esta representación facilita la definición de invariancia por traslación, propiedad discutida por Kari \cite{Kari2005} como requisito para la universalidad computacional en sistemas dinámicos discretos.
+
+\subsection{Definición formal de vecindad de adyacencia planar $\mathcal{N}_H$}
+\label{subsec:vecindad_hexagonal}
+
+Sea $L$ la retícula hexagonal. Se define axiomáticamente la vecindad de adyacencia $\mathcal{N}_H$ de una celda central $c \in L$ como el conjunto de celdas que comparten una frontera unidimensional (arista). A diferencia de la vecindad de Moore en retículas cuadradas \cite{Wolfram2002}, en la topología hexagonal se cumple que:
+\begin{equation}
+    |\mathcal{N}_H(c)| = 6, \quad \forall c \in L
+\end{equation}
+
+La métrica de distancia entre dos celdas $c_1(x_1, y_1, z_1)$ y $c_2(x_2, y_2, z_2)$ en el espacio hexagonal se formaliza como la norma del taxista adaptada (Manhattan hexagonal):
+\begin{equation}
+    d_H(c_1, c_2) = \frac{|x_1 - x_2| + |y_1 - y_2| + |z_1 - z_2|}{2}
+    \label{eq:distancia_hexagonal}
+\end{equation}
+
+% TODO: Insertar diagrama que muestre la vecindad hexagonal de radio 1 y la disposición de los ejes axiales y cúbicos.
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.6\textwidth]{figuras/vecindad_hexagonal.png}
+    \caption{Representación de la vecindad $\mathcal{N}_H$ y el sistema de coordenadas cúbicas subyacente.}
+    \label{fig:vecindad_hexagonal}
+\end{figure}
+
+Esta métrica es fundamental para el análisis de propagación de \textit{gliders} que se abordará en la Parte III, ya que permite predecir la trayectoria de la información sin las distorsiones métricas de las diagonales euclidianas.
+
+
