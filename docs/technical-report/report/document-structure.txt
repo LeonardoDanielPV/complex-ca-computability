@@ -1,0 +1,44 @@
+document-structure.txt
+
+PARTE I: FUNDAMENTOS AXIOMÁTICOS Y FENOMENOLOGÍA DE SISTEMAS DINÁMICOS DISCRETOS
+Esta parte establece el terreno de juego. Aquí se define el problema no como un mero ejercicio de codificación, sino como un problema de análisis matemático y computacional.
+Capítulo 1: Preliminares y Planteamiento del Problema Computacional
+    • Contexto topológico y fenomenológico: La computación no convencional en el marco de los sistemas dinámicos discretos.
+	• Definición formal del objeto de estudio: La frontera entre la complejidad topológica, la reversibilidad y la computabilidad universal.
+	• Delimitación axiomática e hipótesis fundamental: Propiedades de emergencia en reglas específicas (e.g., Spiral, Beehive).
+	• Objetivos analíticos y sintéticos: Criterios de demostración para el modelo propuesto.
+Capítulo 2: Teoría Formal de Autómatas Celulares y Espacios Discretos
+	• Definición conjuntista de espacios celulares: Retículas $\mathbb{Z}^d$, vecindades acotadas y funciones de transición locales ($\delta$).
+	• Dinámica global y clasificación topológica: Atractores, caos discreto y el espacio de configuraciones (Clasificación de Wolfram formalizada).
+	• Teoría de la computabilidad sobre sistemas dinámicos: Equivalencia con Máquinas de Turing y modelos de procesamiento en paralelo.
+	• Reversibilidad frente a irreversibilidad: Consecuencias topológicas en la evolución del autómata y pérdida de información.
+PARTE II: MORFOLOGÍA, GEOMETRÍA ESTRUCTURAL Y EQUIVALENCIA TOPOLÓGICA
+Aquí abordamos los requerimientos críticos de tu proyecto: el modelado visual desde el álgebra y la transformación entre distintas morfologías celulares.
+Capítulo 3: Geometría Computacional y Formalización Algebraica para la Representación Espacial
+	• Estructuras algebraicas para retículas finitas e infinitas: Modelado del espacio de estados bidimensional.
+	• Proyecciones isométricas y transformaciones afines: Formalización matricial para la representación gráfica del espacio celular.
+	• Algoritmos de renderizado discreto: Complejidad computacional en la actualización del espacio de estados (Modelado subyacente para el simulador en C/C++).
+	• Condiciones de frontera y topologías compactas: Análisis de mallas toroidales y cilíndricas en la simulación.
+Capítulo 4: Isomorfismos y Transformaciones Topológicas entre Espacios Celulares
+	• Caracterización geométrica del espacio celular hexagonal: Tesselaciones regulares y vecindades de adyacencia planar.
+	• Inmersión y homomorfismos espaciales: Mapeo matemático biyectivo de topologías hexagonales a retículas ortogonales (cuadrangulares $\mathbb{Z}^2$).
+	• Transformación de vecindades y compensación dimensional: Construcción teórica de vecindades extendidas (Adaptación de las vecindades de Moore y Von Neumann).
+	• Preservación de la computabilidad: Teoremas de equivalencia y conservación de la dinámica bajo transformaciones de red.
+PARTE III: FENÓMENOS EMERGENTES Y LÓGICA DE COLISIONES
+Esta es la médula analítica de tu Trabajo Terminal. Se estudia el comportamiento de la información viajando a través de la topología definida.
+Capítulo 5: Dinámica de Partículas y Computación por Interacciones Locales
+	• Definición formal de propagación de información: Estructuras móviles (gliders), periodos y vectores de traslación.
+	• Álgebra de colisiones y conservación de estados: Reglas de aniquilación, creación y reflexión de estructuras.
+	• Análisis riguroso de reglas de transición no triviales: Estudio de caso para la emergencia computacional (Análisis algebraico de las dinámicas Spiral y Beehive).
+	• Síntesis de compuertas lógicas universales: Construcción matemática de operadores booleanos mediante topología de colisiones.
+Capítulo 6: Análisis de Complejidad y Comprobación del Modelo Teórico
+	• Métricas de entropía y complejidad espacio-temporal: Evaluación del estado de la red durante la evolución.
+	• Análisis asintótico de las estructuras emergentes: Tiempos de estabilización y ciclos límite en conjuntos de configuraciones iniciales.
+	• Validación del isomorfismo teórico: Contrastación del modelo transformado frente al modelo original de reacción de partículas hexagonales.
+PARTE IV: COROLARIOS, AXIOMATIZACIÓN FINAL Y HORIZONTES DE INVESTIGACIÓN
+El cierre académico, donde se demuestra el grado de comprensión sistémica alcanzado.
+Capítulo 7: Síntesis Analítica y Perspectivas Teóricas
+	• Demostración empírico-matemática de las hipótesis: Validación de la computabilidad en los modelos desarrollados.
+	• Límites de la transformación topológica: Discusión sobre la sobrecarga computacional ("overhead") al mapear hexágonos mediante vecindades cuadradas extendidas.
+	• Implicaciones en la computación natural y no convencional: Aportes al modelado de fenómenos físicos discretos.
+	• Líneas de investigación abiertas: Generalización del mapeo topológico a dimensiones superiores ($n$-dimensiones) o espacios celulares asimétricos.
