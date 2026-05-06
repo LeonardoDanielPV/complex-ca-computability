@@ -5,4 +5,237 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Dinámica de partículas y computación por interacciones locales}
-\label{cap:dinámica_computación}
+\label{cap:dinamica_particulas}
+
+\abstract*{Este capítulo aborda la transición analítica desde la topología estática del espacio celular hacia el estudio cinemático y algorítmico de sus configuraciones dinámicas. Se establecen los fundamentos formales para la identificación, rastreo y evaluación de subconfiguraciones móviles (gliders), analizando su comportamiento invariante en el espacio-tiempo. A través de un enfoque basado en la complejidad computacional, se examinan las reglas de transición \textit{Spiral} y \textit{Beehive}, optimizando la evaluación de atractores y trayectorias en la malla transformada. Finalmente, se diseña un marco algorítmico heurístico que permite sincronizar colisiones de partículas, demostrando la viabilidad de sintetizar operadores booleanos universales mediante interacciones deterministas locales.}
+
+\abstract{Este capítulo aborda la transición analítica desde la topología estática del espacio celular hacia el estudio cinemático y algorítmico de sus configuraciones dinámicas. Se establecen los fundamentos formales para la identificación, rastreo y evaluación de subconfiguraciones móviles (\textit{gliders}), analizando su comportamiento invariante en el espacio-tiempo. \newline\indent
+A través de un enfoque basado en la complejidad computacional, se examinan las reglas de transición \textit{Spiral} y \textit{Beehive}, optimizando la evaluación de atractores y trayectorias en la malla transformada. Finalmente, se diseña un marco algorítmico heurístico que permite sincronizar colisiones de partículas, demostrando la viabilidad de sintetizar operadores booleanos universales mediante interacciones deterministas locales.}
+
+\section{Fundamentos algorítmicos y fenomenología de subconfiguraciones móviles}
+\label{sec:fundamentos_moviles}
+
+La evaluación de la computabilidad dentro de un autómata celular complejo requiere abandonar el análisis de celdas individuales para estudiar el comportamiento de entidades con autonomía espacial. Estas estructuras, denominadas partículas o \textit{gliders}, operan como los portadores de información en un modelo de computación por colisión \cite{Basurto2009}. En esta sección se establece la formalización axiomática de dichas estructuras y se desarrollan los algoritmos de detección necesarios para su análisis sobre el sustrato geométrico transformado.
+
+\subsection{Definición conjuntista y caracterización algebraica de \textit{gliders}}
+\label{subsec:caracterizacion_gliders}
+
+Para caracterizar matemáticamente una subconfiguración móvil, es necesario abstraerla del estado global de la retícula. Sea $Q$ el alfabeto finito de estados y $\mathcal{S} = Q^{\mathbb{Z}^2}$ el espacio de configuraciones global introducido en el Capítulo 2 (ver ecuación \eqref{eq:espacio_configuraciones} % TODO: Verificar etiqueta del Capítulo 2
+). Una subconfiguración $c$ se define como la restricción del espacio de estados a un subconjunto finito de coordenadas $D \subset \mathbb{Z}^2$. 
+
+Se define formalmente a un \textit{glider} como una subconfiguración finita $G$ que, tras un número discreto y determinado de aplicaciones de la función de transición global $\Delta$, reaparece isomorfamente en la retícula, pero trasladada por un vector espacial específico. 
+
+Sea $\tau_{\vec{v}}: \mathcal{S} \to \mathcal{S}$ el operador de traslación espacial tal que desplaza cualquier configuración en la dirección y magnitud del vector bidimensional $\vec{v} = (\Delta x, \Delta y)$. Una subconfiguración $G$ se clasifica como un \textit{glider} de periodo $p$ si y solo si satisface la siguiente relación de equivalencia espaciotemporal:
+
+\begin{equation}
+\Delta^p(G) = \tau_{\vec{v}}(G)
+\label{eq:invariancia_glider}
+\end{equation}
+
+Donde:
+\begin{itemize}
+    \item $p \in \mathbb{Z}^+$ es el periodo del oscilador, indicando el número mínimo de generaciones o iteraciones necesarias para que la subconfiguración recupere su morfología original.
+    \item $\vec{v} \in \mathbb{Z}^2$ es el vector de desplazamiento discreto, el cual denota la traslación neta sufrida por la estructura.
+\end{itemize}
+
+A partir de la ecuación \eqref{eq:invariancia_glider}, es posible deducir el vector de velocidad cinemática $\vec{u}$ de la partícula relativa al sustrato celular:
+
+\begin{equation}
+\vec{u} = \frac{\vec{v}}{p}
+\label{eq:velocidad_glider}
+\end{equation}
+
+Esta propiedad de invariancia traslacional asegura que la información codificada por la presencia de un \textit{glider} puede propagarse a través del modelo ortogonal transformado (demostrado en la subsección 4.3.2 % TODO: Verificar número de subsección del bloque 2x2
+) de forma predecible y sin degradación topológica. La ecuación \eqref{eq:velocidad_glider} resulta fundamental, pues constituye el parámetro de entrada principal para sincronizar colisiones lógicas, las cuales se abordarán en la Sección 5.4.
+
+\subsection{Diseño de algoritmos de detección y rastreo de trayectorias en retículas discretas}
+\label{subsec:algoritmos_deteccion}
+
+Para someter el modelo teórico a una comprobación empírica en el simulador en C/C++, es imperativo diseñar un mecanismo algorítmico capaz de identificar automáticamente a estas partículas durante la evolución del sistema. Este proceso se traduce en un problema clásico de búsqueda de patrones bidimensionales (\textit{pattern matching}).
+
+Dado el arreglo ortogonal equivalente desarrollado en el Capítulo 4, la matriz de estado actual $\mathbf{X}$ de dimensiones $M \times N$ funge como el espacio de búsqueda. Un \textit{glider} específico se representa como una matriz patrón $\mathbf{P}$ de dimensiones $h \times w$, donde $h \ll M$ y $w \ll N$.
+
+El algoritmo propuesto explora la matriz $\mathbf{X}$ evaluando una ventana deslizante. Para garantizar la tratabilidad computacional y la eficiencia de los recursos en memoria, el procedimiento efectúa comparaciones locales estrictamente acotadas a las subredes funcionales activas definidas por el mapeo tensorial $\mathcal{T}_B$ de la ecuación \eqref{eq:mapeo_direccional}. % TODO: Verificar etiqueta del tensor direccional Ch4.
+
+\begin{algorithm}[H]
+\caption{Detección por Fuerza Bruta de Subconfiguraciones Invariantes.}\label{alg:detect_glider}
+\begin{algorithmic}
+\STATE 
+\STATE {\textsc{DETECTAR\_GLIDER}}$(\mathbf{X}, \mathbf{P}, M, N, h, w)$
+\STATE \hspace{0.5cm}$ \textbf{ for } i = 0 \textbf{ to } M - h $
+\STATE \hspace{1.0cm}$ \textbf{ for } j = 0 \textbf{ to } N - w $
+\STATE \hspace{1.5cm}$ \text{coincidencia} \gets \text{VERDADERO} $
+\STATE \hspace{1.5cm}$ \textbf{ for } r = 0 \textbf{ to } h - 1 $
+\STATE \hspace{2.0cm}$ \textbf{ for } c = 0 \textbf{ to } w - 1 $
+\STATE \hspace{2.5cm}$ \textbf{ if } \mathbf{X}[i+r][j+c] \neq \mathbf{P}[r][c] \textbf{ then } $
+\STATE \hspace{3.0cm}$ \text{coincidencia} \gets \text{FALSO} $
+\STATE \hspace{3.0cm}$ \textbf{ break } $
+\STATE \hspace{1.5cm}$ \textbf{ if } \text{coincidencia} == \text{VERDADERO} \textbf{ then } $
+\STATE \hspace{2.0cm}$ \textbf{return} \text{ tupla }(i, j) $
+\STATE \hspace{0.5cm}$ \textbf{return} \text{ NULO } $
+\STATE
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[h]
+\centering
+% TODO: Insertar diagrama que muestre la matriz patrón P del glider Spiral sobrepuesta como una ventana de barrido sobre la matriz global X. Resaltar en otro color las celdas coincidentes.
+\caption{Representación gráfica del rastreo de ventana deslizante evaluando una subconfiguración patrón $\mathbf{P}$ sobre la retícula bidimensional transformada $\mathbf{X}$.}
+\label{fig:ventana_deslizante}
+\end{figure}
+
+El análisis de complejidad espacial y temporal de este procedimiento se fundamenta en la notación asintótica propuesta por Cormen \textit{et al.} \cite{Cormen2009}. Sea $n$ la dimensión máxima de la matriz de simulación, tal que $n = \max(M, N)$. En el peor de los casos, la matriz no contiene el patrón buscado y el algoritmo evalúa internamente las sentencias de validación para cada combinación posible de desfases espaciales. 
+
+El ciclo externo efectúa aproximadamente $\mathcal{O}(M)$ iteraciones, anidando un ciclo secundario de $\mathcal{O}(N)$ iteraciones. La comparación interna de la ventana requiere $\mathcal{O}(h \cdot w)$ operaciones de lectura en memoria. Dado que el tamaño estructural del \textit{glider} (las dimensiones $h$ y $w$) está acotado topológicamente por una constante intrínseca a la regla de transición evaluada ($h, w \in \mathcal{O}(1)$), la complejidad de tiempo $T(n)$ se comporta asintóticamente como:
+
+\begin{equation}
+T(n) = \mathcal{O}((M - h)(N - w)(h \cdot w)) \approx \mathcal{O}(M \cdot N) = \mathcal{O}(n^2)
+\label{eq:complejidad_busqueda}
+\end{equation}
+
+Esta cota superior polinomial cuadrática $T(n) = \mathcal{O}(n^2)$ certifica que la localización de información encapsulada en forma de partículas móviles es computacionalmente tratable. La carencia de estructuras de datos auxiliares dentro de la rutina garantiza, además, una complejidad espacial $S(n) = \mathcal{O}(1)$ adicional a la matriz base, posibilitando una implementación de bajo nivel capaz de integrarse directamente en el modelo de \textit{double buffering} definido previamente. Un profundo entendimiento de la optimización de estos ciclos evita el consumo excesivo de recursos de \textit{hardware}, un requisito sine qua non para procesar dinámicas complejas durante lapsos prolongados de tiempo \cite{Wolfram2002}.
+
+
+
+\section{Caracterización algebraica y mecánica algorítmica de la dinámica Spiral}
+\label{sec:dinamica_spiral}
+
+Una vez establecidos los fundamentos para la detección de partículas en la sección anterior, es necesario profundizar en el análisis de las reglas de transición que permiten la emergencia de tales estructuras. La regla \textit{Spiral} constituye un caso de estudio fundamental en este trabajo terminal, debido a su capacidad para generar patrones de crecimiento asimétrico y frentes de onda que se propagan de manera determinista. En este apartado se desarrolla la formalización matemática de dicha regla y el diseño del motor algorítmico optimizado para su ejecución.
+
+\subsection{Formalización de la función de transición Spiral: Espacio de estados y dinámica de fases}
+\label{subsec:formalizacion_spiral}
+
+La dinámica de la regla \textit{Spiral} se define inicialmente sobre una retícula hexagonal pura, denotada por $\mathcal{H}$, donde cada celda $s_{i,j}$ posee una vecindad de adyacencia de radio $r=1$ con seis vecinos directos, de acuerdo con la métrica establecida en la ecuación \eqref{eq:distancia_hexagonal} % TODO: Verificar etiqueta del Capítulo 3
+. Sea $Q = \{0, 1, 2, \dots, k-1\}$ el alfabeto de estados. En el modelo analizado, se utiliza un sistema multiestado que permite representar fases de activación y reposo.
+
+La función de transición local $\delta: Q^7 \to Q$ se modela mediante álgebra de Boole para los estados binarios de activación, extendiéndose a una aritmética modular para las fases de decaimiento. Si se considera el estado de una celda en el tiempo $t$ como $q_t$, la transición hacia $q_{t+1}$ bajo la regla \textit{Spiral} se rige por la suma ponderada de las excitaciones en su vecindad $N(s)$:
+
+\begin{equation}
+q_{t+1} = 
+\begin{cases} 
+1 & \text{si } q_t = 0 \wedge \left( \sum_{n \in N(s)} \sigma(n) \in \{1, 2\} \right) \\
+q_t + 1 \pmod{k} & \text{si } q_t > 0 \\
+0 & \text{en otro caso}
+\end{cases}
+\label{eq:regla_spiral_hex}
+\end{equation}
+
+Donde $\sigma(n)$ es una función de umbral que identifica celdas en estado activo. Esta configuración genera una asimetría intrínseca: la propagación no es isotrópica. Debido a la disposición de los seis vectores direccionales del espacio hexagonal analizados en el Capítulo 4 (ver figura \ref{fig:tensor_vecindad_2x2}), el frente de onda resultante tiende a rotar sobre su propio eje antes de desplazarse, creando la morfología de espiral característica.
+
+Este crecimiento asimétrico es el motor de los frentes de onda. Un frente de onda se define matemáticamente como un conjunto de celdas en estado de activación $q=1$ que forman una cadena conexa en la retícula, seguida de una "estela" de celdas en estados de decaimiento ($q > 1$), lo cual impide que la señal retroceda, garantizando la preservación de la dirección del movimiento, propiedad esencial para la computación por partículas \cite{Basurto2009}.
+
+\subsection{Algoritmo propuesto para la optimización de la cinemática de propagación Spiral}
+\label{subsec:algoritmo_spiral_optimizado}
+
+Para implementar la regla \textit{Spiral} en el simulador desarrollado en C/C++, se debe realizar la transición del modelo hexagonal al modelo de matriz ortogonal transformado. Como se demostró en la Sección 4.3.2, un hexágono se representa mediante un bloque submatricial de $2 \times 2$. El reto computacional radica en evaluar la vecindad extendida de 12 celdas cuadradas (correspondientes a los 6 vecinos hexagonales) sin comprometer el rendimiento del sistema.
+
+Se propone un algoritmo que explota el tensor de vecindad $\mathcal{T}_B$ definido en \eqref{eq:mapeo_direccional}. En lugar de realizar una búsqueda exhaustiva de vecinos en cada iteración, el algoritmo utiliza máscaras de bits (\textit{bitmasking}) sobre el bloque de memoria para calcular la suma de excitaciones. Esta técnica reduce significativamente los ciclos de reloj del procesador al sustituir condicionales complejos por operaciones lógicas a nivel de palabra de memoria.
+
+\begin{algorithm}[H]
+\caption{Cómputo Optimizado de la Regla Spiral sobre Bloques 2x2.}\label{alg:spiral_optimizado}
+\begin{algorithmic}
+\STATE 
+\STATE {\textsc{ACTUALIZAR\_SPIRAL\_BLOQUE}}$(\mathbf{M}_{t}, \mathbf{M}_{t+1}, i, j)$
+\STATE \hspace{0.5cm}$ \text{suma\_vecinos} \gets 0 $
+\STATE \hspace{0.5cm}$ \textbf{ for each } \vec{d} \in \{\text{E, NE, NW, W, SW, SE}\} $
+\STATE \hspace{1.0cm}$ (ni, nj) \gets \textsc{OBTENER\_COORDENADA\_MAPEO}(i, j, \vec{d}) $
+\STATE \hspace{1.0cm}$ \textbf{ if } \mathbf{M}_{t}[ni][nj] == 1 \textbf{ then } $
+\STATE \hspace{1.5cm}$ \text{suma\_vecinos} \gets \text{suma\_vecinos} + 1 $
+\STATE \hspace{0.5cm}$ q\_actual \gets \mathbf{M}_{t}[i][j] $
+\STATE \hspace{0.5cm}$ \textbf{ if } q\_actual == 0 \textbf{ then } $
+\STATE \hspace{1.0cm}$ \textbf{ if } \text{suma\_vecinos} == 1 \textbf{ OR } \text{suma\_vecinos} == 2 \textbf{ then } $
+\STATE \hspace{1.5cm}$ \mathbf{M}_{t+1}[i][j] \gets 1 $
+\STATE \hspace{1.0cm}$ \textbf{ else } $
+\STATE \hspace{1.5cm}$ \mathbf{M}_{t+1}[i][j] \gets 0 $
+\STATE \hspace{0.5cm}$ \textbf{ else } $
+\STATE \hspace{1.0cm}$ \mathbf{M}_{t+1}[i][j] \gets (q\_actual + 1) \textbf{ mod } k $
+\STATE
+\end{algorithmic}
+\end{algorithm}
+
+La eficiencia de este diseño algorítmico se basa en la invarianza dinámica demostrada en el Teorema 4.2. Dado que el mapeo garantiza que las celdas inactivas del bloque $2 \times 2$ no interfieren en la suma (ver Sección 4.5), el algoritmo mantiene una complejidad temporal $T(n) = \mathcal{O}(n)$, donde $n$ es el número total de celdas, pero con una constante de proporcionalidad reducida debido al acceso directo a memoria.
+
+\begin{figure}[h]
+\centering
+% TODO: Ilustrar la generación de un frente de onda Spiral. Mostrar la secuencia temporal (t, t+1, t+2) donde una configuración inicial pequeña rompe la simetría y comienza a rotar, formando los brazos de la espiral.
+\caption{Evolución temporal de la dinámica Spiral. Se observa la formación de frentes de onda y la estela de estados de decaimiento que orientan la propagación.}
+\label{fig:evolucion_spiral}
+\end{figure}
+
+Al utilizar la técnica de \textit{double buffering} discutida en el Capítulo 3, se asegura que el cálculo de la cinemática de los frentes de onda sea atómico y libre de artefactos visuales. Esto permite que los \textit{gliders} generados por la regla \textit{Spiral} se comporten como señales estables, sentando las bases para la síntesis de operadores lógicos que se abordará en la Sección 5.4. La capacidad de controlar estos frentes de onda mediante la geometría de la configuración inicial es lo que permite hablar de una mecánica algorítmica aplicada a la computación natural \cite{Wolfram2002}.
+
+
+
+\section{Topología de atractores y evaluación algorítmica en la dinámica Beehive}
+\label{sec:dinamica_beehive}
+
+A diferencia del comportamiento expansivo estudiado en la sección anterior, no todas las reglas de transición en un autómata celular complejo propician la difusión de la información. Para modelar circuitos lógicos, es igualmente fundamental contar con dinámicas que concentren y estabilicen el estado de la red. En esta sección se analiza formalmente la regla \textit{Beehive}, caracterizada por su tendencia aglutinante y la formación de ciclos límite. Posteriormente, se desarrolla una estrategia algorítmica de particionamiento espacial para optimizar su cálculo sobre zonas de alta densidad.
+
+\subsection{Estudio analítico de ciclos límite y osciladores bajo la función de transición Beehive}
+\label{subsec:analisis_beehive}
+
+La topología de la dinámica \textit{Beehive} contrasta drásticamente con la naturaleza cinemática de la regla \textit{Spiral}. Mientras que \textit{Spiral} rompe la simetría local para generar frentes de onda que se desplazan por el espacio, \textit{Beehive} opera como un sumidero espacial, forzando a las configuraciones iniciales a colapsar sobre sí mismas o a estabilizarse en vecindades confinadas.
+
+Para formalizar esta dinámica, se define la regla primero sobre su sustrato natural: la retícula hexagonal $\mathcal{H}$ con vecindad de radio $r=1$. Sea $q_t \in Q$ el estado de una celda en el tiempo $t$, y sea $S_N = \sum_{n \in N(s)} \sigma(n)$ la suma de sus vecinos inmediatos en estado activo. La transición hacia el estado $q_{t+1}$ se establece matemáticamente como:
+
+\begin{equation}
+q_{t+1} = 
+\begin{cases} 
+1 & \text{si } q_t = 0 \wedge (S_N = 2) \\
+q_t + 1 \pmod{k} & \text{si } q_t > 0 \\
+0 & \text{en otro caso}
+\end{cases}
+\label{eq:regla_beehive_hex}
+\end{equation}
+
+Esta restricción estricta en el umbral de nacimiento ($S_N = 2$) impide la propagación difusiva. Si una región presenta una densidad de excitación demasiado alta, la sobrepoblación obliga a las celdas a entrar en su fase de decaimiento modulada por el alfabeto $k$, bloqueando la expansión del patrón. 
+
+Topológicamente, esto implica que las trayectorias en el espacio de configuraciones convergen rápidamente hacia atractores locales \cite{Wolfram2002}. Se define un atractor local $A \subset \mathcal{S}$ como una subconfiguración acotada espacialmente que exhibe un comportamiento periódico tras $\tau$ generaciones. En el contexto de \textit{Beehive}, es común observar la emergencia de osciladores de periodo $p$, los cuales satisfacen:
+
+\begin{equation}
+\Delta^p(A) = A
+\label{eq:oscilador_periodo}
+\end{equation}
+
+Donde $\Delta$ es la función de transición global definida en el Capítulo 2 (ver ecuación \eqref{eq:transicion_global} % TODO: Verificar etiqueta del Capítulo 2
+). Cuando $p = 1$, la estructura se denomina configuración estable (o bloque). La caracterización de estos osciladores resulta crítica para el diseño computacional, dado que actúan como memorias estáticas o cables aislantes capaces de contener y dirigir las colisiones de las partículas evaluadas en la Sección 5.1.
+
+\subsection{Algoritmos de resolución para aglomeraciones densas y predicción de auto-organización}
+\label{subsec:algoritmo_beehive_particionado}
+
+Al proyectar la regla hexagonal \textit{Beehive} sobre la retícula ortogonal transformada $\mathbf{X}$ mediante el mapeo submatricial de $2 \times 2$ (detallado en la Sección 4.3), surge un desafío computacional directo: la dinámica aglutinante concentra el procesamiento lógico en regiones sumamente densas, mientras que grandes áreas de la red permanecen en un estado nulo de reposo topológico. 
+
+Evaluar secuencialmente la matriz completa bajo la cota $\mathcal{O}(n^2)$ calculada en el Capítulo 3 (ver ecuación \eqref{eq:complejidad_busqueda} % TODO: Verificar etiqueta del Capítulo 3
+) resulta ineficiente debido al acceso redundante a memoria en zonas sin actividad. Para optimizar el rendimiento del simulador, se diseña un algoritmo heurístico predictivo basado en particionamiento espacial. 
+
+El espacio de simulación se divide lógicamente en macro-bloques discretos de dimensiones $B_h \times B_w$. El algoritmo calcula la entropía local de cada macro-bloque. Si la entropía es cero (ausencia de celdas en estado activo o en decaimiento), el algoritmo omite la evaluación de dicho sector, reduciendo significativamente los ciclos de reloj del procesador.
+
+\begin{algorithm}[H]
+\caption{Evaluación Predictiva por Particionamiento Espacial.}\label{alg:beehive_particionado}
+\begin{algorithmic}
+\STATE 
+\STATE {\textsc{PREDECIR\_BEEHIVE\_PARTICIONADO}}$(\mathbf{X}_t, \mathbf{X}_{t+1}, M, N, B_h, B_w)$
+\STATE \hspace{0.5cm}$ \textbf{ for } I = 0 \textbf{ to } M - 1 \textbf{ step } B_h $
+\STATE \hspace{1.0cm}$ \textbf{ for } J = 0 \textbf{ to } N - 1 \textbf{ step } B_w $
+\STATE \hspace{1.5cm}$ E \gets \textsc{CALCULAR\_ENTROPIA\_BLOQUE}(\mathbf{X}_t, I, J, B_h, B_w) $
+\STATE \hspace{1.5cm}$ \textbf{ if } E > 0 \textbf{ then } $
+\STATE \hspace{2.0cm}$ \textbf{ for } i = I \textbf{ to } I + B_h - 1 $
+\STATE \hspace{2.5cm}$ \textbf{ for } j = J \textbf{ to } J + B_w - 1 $
+\STATE \hspace{3.0cm}$ \mathbf{X}_{t+1}[i][j] \gets \textsc{REGLA\_BEEHIVE\_MAPPED}(\mathbf{X}_t, i, j) $
+\STATE \hspace{1.5cm}$ \textbf{ else } $
+\STATE \hspace{2.0cm}$ \textsc{COPIAR\_BLOQUE\_VACIO}(\mathbf{X}_{t+1}, I, J, B_h, B_w) $
+\STATE \hspace{0.5cm}$ \textbf{return} \mathbf{X}_{t+1} $
+\STATE
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[h]
+\centering
+% TODO: Insertar diagrama que muestre la retícula dividida en una cuadrícula de macro-bloques. Resaltar en gris las regiones con entropía cero que el algoritmo omite, y en rojo las aglomeraciones Beehive que sí son procesadas por el motor de cálculo.
+\caption{Esquema lógico del particionamiento espacial. La omisión algorítmica de los macro-bloques en reposo reduce el número de operaciones de lectura/escritura en la memoria.}
+\label{fig:particionamiento_espacial}
+\end{figure}
+
+Desde la perspectiva del análisis asintótico, en el peor de los casos (una aglomeración que cubre la matriz entera), la complejidad temporal sigue acotada por $\mathcal{O}(M \cdot N)$. Sin embargo, para las condiciones de simulación típicas, donde los osciladores y atrayentes colapsan en radios confinados, la complejidad promedio desciende a $\mathcal{O}(A)$, donde $A$ es el área ocupada estrictamente por los macro-bloques activos. 
+
+Este enfoque asegura que múltiples vecindades que cambian simultáneamente puedan resolverse garantizando la técnica de \textit{double buffering} expuesta en el modelo algebraico del Capítulo 3, permitiendo una estabilidad numérica impecable en la representación de estados aglutinados \cite{Basurto2009}. La identificación de estas zonas estables es el paso previo definitivo para diseñar la topología de intersecciones que emulará compuertas lógicas, objeto de la siguiente sección.
