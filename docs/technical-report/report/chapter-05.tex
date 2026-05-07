@@ -239,3 +239,86 @@ El espacio de simulación se divide lógicamente en macro-bloques discretos de d
 Desde la perspectiva del análisis asintótico, en el peor de los casos (una aglomeración que cubre la matriz entera), la complejidad temporal sigue acotada por $\mathcal{O}(M \cdot N)$. Sin embargo, para las condiciones de simulación típicas, donde los osciladores y atrayentes colapsan en radios confinados, la complejidad promedio desciende a $\mathcal{O}(A)$, donde $A$ es el área ocupada estrictamente por los macro-bloques activos. 
 
 Este enfoque asegura que múltiples vecindades que cambian simultáneamente puedan resolverse garantizando la técnica de \textit{double buffering} expuesta en el modelo algebraico del Capítulo 3, permitiendo una estabilidad numérica impecable en la representación de estados aglutinados \cite{Basurto2009}. La identificación de estas zonas estables es el paso previo definitivo para diseñar la topología de intersecciones que emulará compuertas lógicas, objeto de la siguiente sección.
+
+
+
+\section{Diseño computacional para la síntesis de operadores booleanos mediante colisiones}
+\label{sec:sintesis_operadores}
+
+La capacidad de un autómata celular para sostener subconfiguraciones móviles invariantes (\textit{gliders}), tal como se demostró en la Sección 5.1, junto con la existencia de atractores locales (Sección 5.3), proporciona los componentes primitivos para la transmisión y el almacenamiento de información. No obstante, para alcanzar la universalidad computacional, es imperativo establecer un mecanismo mediante el cual estas señales interactúen y modifiquen sus trayectorias de forma predecible. En esta sección se formaliza la teoría de colisiones como un isomorfismo de compuertas lógicas y se diseña el marco algorítmico necesario para programar dichas interacciones espacial y temporalmente.
+
+\subsection{Isomorfismo algorítmico entre la topología de intersecciones y las compuertas lógicas universales}
+\label{subsec:isomorfismo_logico}
+
+En el contexto de la dinámica de partículas discretas, una colisión se define matemáticamente como la intersección espaciotemporal de los dominios de dos o más \textit{gliders}. Sean $G_1$ y $G_2$ dos partículas con trayectorias definidas por sus respectivos vectores de velocidad $\vec{u}_1$ y $\vec{u}_2$. Si sus posiciones iniciales $\vec{p}_1(0)$ y $\vec{p}_2(0)$ están dispuestas de tal modo que sus coordenadas coinciden en una vecindad de radio $r$ durante un instante de tiempo $t_c$, la función de transición global $\Delta$ operará sobre un estado aglutinado que rompe la invariancia traslacional individual de ambas partículas.
+
+Esta perturbación topológica genera una nueva configuración resultante, la cual puede consistir en la aniquilación mutua, la generación de un atractor estático (\textit{Beehive}), o la creación de nuevas partículas divergentes (\textit{Spiral}). Formalmente, este proceso representa el mapeo de un conjunto de entradas hacia un conjunto de salidas, constituyendo una función matemática no lineal $f: \{0,1\}^n \to \{0,1\}^m$, donde la presencia de un \textit{glider} en una trayectoria específica se codifica como el bit lógico $1$, y su ausencia como $0$ \cite{Basurto2009}.
+
+El comportamiento resultante de la colisión es isomorfo al de las compuertas lógicas fundamentales:
+
+\begin{itemize}
+    \item \textbf{Compuerta AND:} Se diseña estableciendo dos trayectorias incidentes. La colisión destructiva se parametriza de modo que, únicamente cuando ambas partículas convergen (entradas $1, 1$), los fragmentos de la aniquilación interaccionan para emitir un tercer \textit{glider} en una trayectoria de salida (salida $1$). Si solo una partícula ingresa, esta pasa inalterada hacia un sumidero, resultando en un $0$ lógico en la vía de salida deseada.
+    \item \textbf{Compuerta NOT:} Se sintetiza explotando la irreversibilidad del sistema analizada en el Capítulo 2 (ver figura \ref{fig:jardin_del_eden}). % TODO: Verificar etiqueta del diagrama de estados Jardín del Edén en el capítulo 2. 
+    Se establece un cañón emisor continuo (una señal $1$ constante). La entrada lógica actúa como un \textit{glider} interceptor. Si la entrada es $1$, colisiona y destruye la señal constante, resultando en una salida $0$. Si la entrada es $0$ (ausencia), la señal constante prosigue su curso, registrando un $1$.
+\end{itemize}
+
+Dado que cualquier función booleana puede expresarse mediante una combinación de operadores universales (como \text{NAND} o la combinación de \text{AND} y \text{NOT}), la topología de colisiones en el autómata celular es teóricamente capaz de evaluar circuitos lógicos de complejidad arbitraria \cite{Wolfram2002}.
+
+\subsection{Algoritmo heurístico propuesto para la programación espacial de circuitos emergentes}
+\label{subsec:algoritmo_heuristico_programacion}
+
+La síntesis de circuitos mediante colisiones impone un reto geométrico riguroso: las partículas deben converger en un punto de intersección exacto, con una precisión de celda y generación. Para un \textit{glider} $k$ con periodo $p_k$, vector de desplazamiento $\vec{v}_k$ y posición inicial $\vec{p}_k(0)$, su posición en el tiempo $t$ obedece a la cinemática discreta:
+
+\begin{equation}
+\vec{p}_k(t) = \vec{p}_k(0) + \left\lfloor \frac{t}{p_k} \right\rfloor \vec{v}_k + \vec{\delta}(t \pmod{p_k})
+\label{eq:cinematica_discreta}
+\end{equation}
+
+Donde $\vec{\delta}$ representa la fase morfológica de la subconfiguración. Para automatizar el diseño de estas compuertas sobre la malla ortogonal en el simulador C/C++, se propone un algoritmo heurístico de búsqueda inversa. A partir de una coordenada de colisión deseada $(i_c, j_c)$ y un tiempo objetivo $t_c$, el algoritmo calcula hacia atrás los vectores de inicialización requeridos. El procedimiento incorpora validaciones de fase para garantizar que los frentes de onda (evaluados mediante \textit{double buffering} en el Capítulo 3) engranen correctamente.
+
+\begin{algorithm}[H]
+\caption{Heurística de Sincronización Espaciotemporal para Circuitos de Colisión.}\label{alg:sync_gliders}
+\begin{algorithmic}
+\STATE 
+\STATE {\textsc{CALCULAR\_VECTORES\_INICIALES}}$(i_c, j_c, t_c, \vec{u}_1, \vec{u}_2, p_1, p_2)$
+\STATE \hspace{0.5cm}$ \text{soluciones} \gets \emptyset $
+\STATE \hspace{0.5cm}$ \textbf{ for } t_{retraso} = 0 \textbf{ to } \max(p_1, p_2) - 1 $
+\STATE \hspace{1.0cm}$ t_1 \gets t_c - t_{retraso} $
+\STATE \hspace{1.0cm}$ t_2 \gets t_c $
+\STATE \hspace{1.0cm}$ \textbf{ if } (t_1 \pmod{p_1} == 0) \textbf{ AND } (t_2 \pmod{p_2} == 0) \textbf{ then } $
+\STATE \hspace{1.5cm}$ i_1 \gets i_c - (t_1 \cdot \vec{u}_1.x) $
+\STATE \hspace{1.5cm}$ j_1 \gets j_c - (t_1 \cdot \vec{u}_1.y) $
+\STATE \hspace{1.5cm}$ i_2 \gets i_c - (t_2 \cdot \vec{u}_2.x) $
+\STATE \hspace{1.5cm}$ j_2 \gets j_c - (t_2 \cdot \vec{u}_2.y) $
+\STATE \hspace{1.5cm}$ \textbf{ if } \textsc{VALIDAR\_LIMITES\_MATRIZ}(i_1, j_1, i_2, j_2) \textbf{ then } $
+\STATE \hspace{2.0cm}$ \text{soluciones} \gets \text{soluciones} \cup \{(i_1, j_1, t_1), (i_2, j_2, t_2)\} $
+\STATE \hspace{0.5cm}$ \textbf{return} \text{ soluciones } $
+\STATE
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[h]
+\centering
+% TODO: Insertar diagrama del espacio-tiempo (2D + t) que muestre dos trayectorias lineales de gliders intersectando en el cono de luz. Resaltar cómo el algoritmo rastrea hacia atrás a lo largo de los vectores de velocidad u_1 y u_2 para encontrar las coordenadas iniciales i, j.
+\caption{Representación del retroceso cinemático para la sincronización de colisiones. El algoritmo determina las semillas iniciales asegurando que las fases morfológicas coincidan en el punto de intersección $(i_c, j_c)$.}
+\label{fig:sincronizacion_colision}
+\end{figure}
+
+El algoritmo \ref{alg:sync_gliders} permite abstraer la complejidad topológica del autómata, brindando al investigador una interfaz de alto nivel (equivalente a la instanciación de componentes electrónicos) para ensamblar el operador lógico sobre el tejido celular.
+
+\subsection{Tratabilidad computacional y cotas de complejidad en la sincronización de señales de control}
+\label{subsec:complejidad_sincronizacion}
+
+Para validar la escalabilidad de esta propuesta en el contexto del motor algorítmico, es forzoso someter el problema de la sincronización a un análisis estricto de complejidad asintótica, utilizando los formalismos de la Teoría de la Computación introducidos en el Capítulo 1 y las cotas de Cormen \textit{et al.} \cite{Cormen2009}.
+
+Si se aísla el problema de calcular la colisión de dos partículas libres para conformar una única compuerta lógica (como lo realiza el algoritmo \ref{alg:sync_gliders}), la complejidad de búsqueda temporal es constante $\mathcal{O}(p_{max})$, y la complejidad espacial es $\mathcal{O}(1)$. Por consiguiente, la síntesis local de un operador pertenece trivialmente a la clase de complejidad $\text{P}$ (tiempo polinomial), evidenciando su tratabilidad computacional.
+
+Sin embargo, el objetivo final de un modelo de computación natural es conectar (cascadear) el resultado de una compuerta hacia la entrada de otra para conformar un circuito arbitrario de profundidad $n$. Este proceso exige la superposición de $n$ vectores espaciotemporales dentro de un sustrato bidimensional finito acotado por la matriz $\mathbf{X}$ de dimensiones $M \times N$, evitando colisiones parásitas (intersecciones no intencionadas entre cables lógicos).
+
+Matemáticamente, la programación de trayectorias sin interferencias en el arreglo ortogonal para un conjunto arbitrario de señales bajo restricciones de latencia es isomórfica al problema del enrutamiento de múltiples productos enteros (\textit{Integer Multi-Commodity Flow}) y a variantes del problema de satisfacibilidad booleana (\text{3-SAT}) con restricciones geométricas espaciales \cite{Kari2005}. 
+
+Dado que el problema de empaquetar trayectorias libres de cruces espurios a lo largo del tiempo sobre una gráfica de retícula acotada es NP-duro, la sincronización global y automatizada de un circuito denso genérico mediante \textit{gliders} recae estrictamente en la clase $\text{NP}$-completo. Para circuitos acotados y pre-diseñados (como un sumador binario), el cálculo es resoluble en un tiempo empíricamente eficiente mediante la heurística propuesta.
+
+Por otra parte, si el tamaño del sustrato tiende al infinito ($M, N \to \infty$) y se evalúa la convergencia del autómata desde una configuración inicial de circuito para predecir si un \textit{glider} emergerá en un tiempo no acotado, el análisis transita del dominio de la clase NP hacia la equivalencia con el problema de la parada de la Máquina de Turing (\textit{Halting Problem}). En el límite asintótico, la decidibilidad de determinar si una configuración arbitraria generará una señal lógica específica es indecidible \cite{Kari2005}.
+
+Este análisis asintótico justifica la necesidad de utilizar un marco de simulación iterativa como el desarrollado en este Trabajo Terminal: dado que la predicción analítica de circuitos complejos presenta barreras de intratabilidad o indecidibilidad, la simulación eficiente de las reglas subyacentes con complejidades espaciales acotadas como $\mathcal{O}(n^2)$ (Ecuación \eqref{eq:complejidad_busqueda}) se erige como el único mecanismo matemáticamente válido para evaluar las propiedades de la universalidad computacional emergente en estos sistemas dinámicos.
