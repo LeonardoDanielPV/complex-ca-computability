@@ -34,12 +34,11 @@ El objeto de estudio central de este trabajo se focaliza en la delimitación de 
 
 Para fines de ilustración fenomenológica, se modela el vecindario y su transición de estados geométricos en el siguiente diagrama.
 
-% TODO: Insertar diagrama que muestre un ejemplo de vecindad bidimensional (por ejemplo, Moore o Hexagonal) y cómo los estados de las células vecinas convergen en el tiempo t+1 para definir el estado de la célula central.
-\begin{figure}[h]
-\centering
-% \includegraphics[width=0.7\textwidth]{ruta/al/archivo/vecindad_transicion.png}
-\caption{Representación geométrica de una vecindad bidimensional y el flujo de información durante la evaluación de la función de transición de los estados para el paso temporal discreto $t \to t+1$.}
-\label{fig:vecindad_transicion}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/chapter-01/vecindad_transicion.pdf}
+    \caption{Representación geométrica de una vecindad bidimensional hexagonal y el flujo de información determinista durante la evaluación temporal. El estado de la célula central $s_c^{t+1}$ emerge como el mapeo estricto de los estados adyacentes $s_i^t$ a través de la función de transición local $\Phi$.}
+    \label{fig:vecindad_transicion}
 \end{figure}
 
 \section{Delimitación axiomática e hipótesis fundamental}
