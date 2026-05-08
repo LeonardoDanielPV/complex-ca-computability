@@ -8,6 +8,13 @@
 
 \begin{partbacktext}
 \part{Morfología, geometría estructural y equivalencia topológica}
-\noindent Use the template \emph{part.tex} together with the document class SVMono (monograph-type books) or SVMult (edited books) to style your part title page and, if desired, a short introductory text (maximum one page) on its verso page.
+
+\noindent Esta segunda parte del documento establece la transición formal entre la teoría abstracta de los autómatas celulares, desarrollada en los Capítulos \ref{cap:preliminares} y \ref{cap:teoria_formal}, y su representación geométrica computable. El objetivo de esta sección es definir los modelos matemáticos y topológicos necesarios para proyectar la dinámica de una retícula hexagonal sobre la arquitectura ortogonal de la memoria de un equipo de cómputo convencional, garantizando en todo momento la rigurosidad analítica y la invariancia espacial.
+
+En el Capítulo \ref{cap:geometria_computacional}, se formalizan las estructuras algebraicas que rigen el espacio discreto bidimensional. Se modela la retícula como un grupo abeliano bajo la adición y se definen las métricas analíticas fundamentales para la tesela hexagonal. De igual forma, se establece el modelo algebraico inverso para transformar el espacio continuo $\mathbb{R}^2$ a coordenadas discretas. Esto permite demostrar teóricamente que el algoritmo de actualización topológica opera en un tiempo asintóticamente lineal $\mathcal{O}(n)$ y con requerimientos espaciales de $\mathcal{O}(n)$, justificando empírica y formalmente el desarrollo del simulador en C/C++.
+
+Posteriormente, en el Capítulo \ref{chap:isomorfismos}, se aborda el problema central de la representación en memoria: la transformación geométrica entre topologías. Se definen las ecuaciones de mapeo afín para proyectar la vecindad hexagonal pura hacia un tensor ortogonal de subred $2 \times 2$ (denotado como $\mathcal{T}_B$). A través de una demostración deductiva, se comprueba que la inactividad intencional de dos aristas en este bloque ortogonal previene la pérdida de simetría en la propagación de la información. 
+
+En conjunto, el modelado algebraico y las demostraciones topológicas de esta parte constituyen el núcleo del motor matemático del proyecto. Este bloque garantiza estructuralmente que ninguna regla o propiedad de computabilidad se degrade al ser simulada, estableciendo el sustrato algorítmico indispensable para el análisis cinemático de partículas (\textit{gliders}) y el cálculo de interacciones locales booleanas que se detallarán en el Capítulo \ref{cap:dinamica_particulas}.
 
 \end{partbacktext}

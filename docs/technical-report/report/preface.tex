@@ -11,15 +11,17 @@
 \markboth{Prólogo}{Prefacio}
 \addcontentsline{toc}{chapter}{Prefacio}
 
-%% Please write your preface here
-Use the template \emph{preface.tex} together with the document class SVMono (monograph-type books) or SVMult (edited books) to style your preface.
+El presente documento expone los fundamentos teóricos, matemáticos y algorítmicos que sustentan la investigación titulada ``Computabilidad en autómatas celulares complejos''. El propósito central de este trabajo es formalizar y demostrar la capacidad de ciertos sistemas dinámicos discretos, específicamente bajo las reglas de transición \textit{Spiral} y \textit{Beehive}, para ejecutar procesos de cómputo universal a través de la colisión determinista de configuraciones móviles o \textit{gliders}. 
 
-A preface\index{preface} is a book's preliminary statement, usually written by the \textit{author or editor} of a work, which states its origin, scope, purpose, plan, and intended audience, and which sometimes includes afterthoughts and acknowledgments of assistance. 
+A lo largo del desarrollo de la ingeniería y las ciencias de la computación, es recurrente observar cómo problemas que inicialmente parecen abstractos o puramente teóricos exigen soluciones arquitectónicas y algorítmicas que permiten comprender el manejo de la información a bajo nivel. Bajo esta premisa, el trabajo se encuentra estructurado en una progresión axiomática que guía al lector desde las definiciones más fundamentales hasta el análisis de complejidad algorítmica.
 
-When written by a person other than the author, it is called a foreword. The preface or foreword is distinct from the introduction, which deals with the subject of the work.
+En el Capítulo \ref{cap:preliminares}, se delimita formalmente el objeto de estudio, estableciendo los criterios analíticos y sintéticos necesarios para evaluar la emergencia computacional en los modelos seleccionados. Posteriormente, el Capítulo \ref{cap:teoria_formal} consolida el marco conjuntista y topológico, abordando el concepto crítico de la irreversibilidad en la evolución del autómata; se demuestra cómo la aniquilación de información y la generación de estados Jardín del Edén son requisitos axiomáticos para emular compuertas lógicas tradicionales.
 
-Customarily \textit{acknowledgments} are included as last part of the preface.
- 
+El diseño de un motor matemático computacional exige una comprensión profunda de las estructuras espaciales subyacentes. Por ello, el Capítulo \ref{cap:geometria_computacional} detalla la geometría analítica de la teselación hexagonal y justifica las decisiones de implementación, comprobando teóricamente que la complejidad temporal de evaluación y la actualización mediante \textit{double buffering} mantienen una cota lineal $\mathcal{O}(n)$. Esta base permite formalizar, en el Capítulo \ref{chap:isomorfismos}, el mapeo topológico esencial del proyecto: la transformación biyectiva de una matriz hexagonal a una subred ortogonal de memoria. Mediante el modelo algebraico de transformación definido en la Ecuación \eqref{eq:mapeo_direccional} y la preservación de la métrica de distancia de la Ecuación \eqref{eq:distancia_hexagonal}, se garantiza la invariancia espacial, ilustrada estructuralmente en la Figura \ref{fig:tensor_vecindad_2x2}.
+
+Finalmente, el Capítulo \ref{cap:dinamica_particulas} aborda la fenomenología de estas partículas en movimiento, culminando con la evaluación algorítmica de sus interacciones. Se formaliza que la sincronización determinista de \textit{gliders} para el diseño de circuitos lógicos recae en la clase de complejidad NP, validando la necesidad de los métodos de búsqueda iterativa descritos por la Ecuación \eqref{eq:complejidad_busqueda}.
+
+Este documento está dirigido a estudiantes de ingeniería, matemáticos e investigadores interesados en la computación no convencional, la teoría de autómatas y el análisis de sistemas complejos. La comprensión competente de estos modelos lógicos y espaciales ofrece una perspectiva rigurosa sobre cómo reglas simples, ejecutadas masivamente en paralelo, pueden producir resultados coherentes, estables y computacionalmente universales.
 
 \vspace{\baselineskip}
 \begin{flushright}\noindent
@@ -27,5 +29,3 @@ Ciudad de México, México\hfill {\it Esparza Jacobo Diego}\\
 Estado de México, México\hfill {\it Pérez Velázquez Leonardo Daniel}\\
 Abril de 2026\hfill ~\\
 \end{flushright}
-
-
