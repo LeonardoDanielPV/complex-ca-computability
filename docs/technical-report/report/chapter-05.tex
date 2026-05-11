@@ -77,9 +77,10 @@ El algoritmo propuesto explora la matriz $\mathbf{X}$ evaluando una ventana desl
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
-% TODO: Insertar diagrama que muestre la matriz patrón P del glider Spiral sobrepuesta como una ventana de barrido sobre la matriz global X. Resaltar en otro color las celdas coincidentes.
+% Diagrama que muestre la matriz patrón P del glider Spiral sobrepuesta como una ventana de barrido sobre la matriz global X. Resaltar en otro color las celdas coincidentes.
+\includegraphics[width=0.8\textwidth]{figures/chapter-05/ventana_deslizante.pdf}
 \caption{Representación gráfica del rastreo de ventana deslizante evaluando una subconfiguración patrón $\mathbf{P}$ sobre la retícula bidimensional transformada $\mathbf{X}$.}
 \label{fig:ventana_deslizante}
 \end{figure}
@@ -155,9 +156,10 @@ Se propone un algoritmo que explota el tensor de vecindad $\mathcal{T}_B$ defini
 
 La eficiencia de este diseño algorítmico se basa en la invarianza dinámica demostrada en el Teorema 4.2. Dado que el mapeo garantiza que las celdas inactivas del bloque $2 \times 2$ no interfieren en la suma (ver Sección 4.5), el algoritmo mantiene una complejidad temporal $T(n) = \mathcal{O}(n)$, donde $n$ es el número total de celdas, pero con una constante de proporcionalidad reducida debido al acceso directo a memoria.
 
-\begin{figure}[h]
+\begin{figure}[b]
 \centering
-% TODO: Ilustrar la generación de un frente de onda Spiral. Mostrar la secuencia temporal (t, t+1, t+2) donde una configuración inicial pequeña rompe la simetría y comienza a rotar, formando los brazos de la espiral.
+% Generación de un frente de onda Spiral. Mostrar la secuencia temporal (t, t+1, t+2) donde una configuración inicial pequeña rompe la simetría y comienza a rotar, formando los brazos de la espiral.
+\includegraphics[width=\textwidth]{figures/chapter-05/evolucion_spiral.pdf}
 \caption{Evolución temporal de la dinámica Spiral. Se observa la formación de frentes de onda y la estela de estados de decaimiento que orientan la propagación.}
 \label{fig:evolucion_spiral}
 \end{figure}
@@ -231,7 +233,8 @@ El espacio de simulación se divide lógicamente en macro-bloques discretos de d
 
 \begin{figure}[h]
 \centering
-% TODO: Insertar diagrama que muestre la retícula dividida en una cuadrícula de macro-bloques. Resaltar en gris las regiones con entropía cero que el algoritmo omite, y en rojo las aglomeraciones Beehive que sí son procesadas por el motor de cálculo.
+% Diagrama que muestre la retícula dividida en una cuadrícula de macro-bloques. Resaltar en gris las regiones con entropía cero que el algoritmo omite, y en rojo las aglomeraciones Beehive que sí son procesadas por el motor de cálculo.
+\includegraphics[width=\textwidth]{figures/chapter-05/particionamiento_espacial.pdf}
 \caption{Esquema lógico del particionamiento espacial. La omisión algorítmica de los macro-bloques en reposo reduce el número de operaciones de lectura/escritura en la memoria.}
 \label{fig:particionamiento_espacial}
 \end{figure}
@@ -299,7 +302,8 @@ Donde $\vec{\delta}$ representa la fase morfológica de la subconfiguración. Pa
 
 \begin{figure}[h]
 \centering
-% TODO: Insertar diagrama del espacio-tiempo (2D + t) que muestre dos trayectorias lineales de gliders intersectando en el cono de luz. Resaltar cómo el algoritmo rastrea hacia atrás a lo largo de los vectores de velocidad u_1 y u_2 para encontrar las coordenadas iniciales i, j.
+% Diagrama del espacio-tiempo (2D + t) que muestre dos trayectorias lineales de gliders intersectando en el cono de luz. Resaltar cómo el algoritmo rastrea hacia atrás a lo largo de los vectores de velocidad u_1 y u_2 para encontrar las coordenadas iniciales i, j.
+\includegraphics[width=\textwidth]{figures/chapter-05/sincronizacion_colision.pdf}
 \caption{Representación del retroceso cinemático para la sincronización de colisiones. El algoritmo determina las semillas iniciales asegurando que las fases morfológicas coincidan en el punto de intersección $(i_c, j_c)$.}
 \label{fig:sincronizacion_colision}
 \end{figure}
