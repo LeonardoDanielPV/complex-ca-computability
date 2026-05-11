@@ -124,10 +124,10 @@ Los requerimientos no funcionales establecen los límites de eficiencia y manten
 \label{tab:rnf03}
 \end{table}
 
-% Diagrama de bloques que ilustre la jerarquía de requerimientos y su relación con el ciclo de vida de la simulación.
+% TODO: Insertar diagrama de bloques que ilustre la jerarquía de requerimientos y su relación con el ciclo de vida de la simulación.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/chapter-06/jerarquia_req.pdf}
+% \includegraphics[width=0.8\textwidth]{figures/chapter-06/jerarquia_requerimientos.pdf}
 \caption{Mapa conceptual de la interdependencia entre los requerimientos funcionales de simulación y las restricciones de diseño arquitectónico.}
 \label{fig:jerarquia_req}
 \end{figure}
@@ -147,10 +147,10 @@ Esta estratificación es fundamental para preservar la integridad de la función
 
 La arquitectura del sistema se articula mediante cuatro estratos jerárquicos con responsabilidades unívocamente definidas. El flujo de información es bidireccional en términos de control, pero estrictamente unidireccional en términos de dependencias lógicas, lo que facilita la mantenibilidad y la extensibilidad del motor.
 
-% Diagrama de arquitectura general (Diagrama de bloques de 4 capas: Núcleo, Control, Representación y Aplicación)
+% TODO: Insertar diagrama de arquitectura general (Diagrama de bloques de 4 capas: Núcleo, Control, Representación y Aplicación)
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter-06/diagrama_arquitectura.pdf}
+% \includegraphics[width=0.85\textwidth]{figures/chapter-06/arquitectura_bloques.pdf}
 \caption{Diagrama estructural de la arquitectura del sistema. Se ilustra la jerarquía de capas y el aislamiento del núcleo de simulación respecto a la interfaz de usuario.}
 \label{fig:diagrama_arquitectura}
 \end{figure}
@@ -239,10 +239,10 @@ Matriz optimizada (\texttt{char}) & 8 bits & $\approx$ 1.0 MB \\ \hline
 
 Esta optimización reduce la complejidad espacial efectiva del sistema, facilitando la simulación de colisiones de gliders en mallas extensas que, de otro modo, presentarían cuellos de botella en la caché del procesador. Como se detalló en el análisis arquitectónico del sistema, esta decisión es el sustento para mantener una ejecución determinista sin comprometer el rendimiento de la aplicación activa.
 
-% Diagrama de clases que muestre la relación entre Automaton, GridStorage y BitArray.
+% TODO: Insertar diagrama de clases que muestre la relación entre Automaton, GridStorage y BitArray.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter-06/diagrama_clases_nucleo.pdf}
+% \begin{tikzpicture} ... \end{tikzpicture}
 \caption{Diagrama de encapsulamiento del núcleo. Se observa la agregación de la lógica de reglas y el almacenamiento optimizado dentro de la entidad Automaton.}
 \label{fig:diagrama_clases_nucleo}
 \end{figure}
@@ -294,10 +294,10 @@ El proceso central que ejecuta el control temporal en cada iteración del bucle 
 
 Al mantener la semántica temporal aislada del renderizado visual y del estado lógico intrínseco, se establece un marco altamente robusto para experimentación. Cualquier alteración a la topología o a la regla de propagación (RF-02) no requiere modificación alguna en la lógica del temporizador expuesto en esta sección.
 
-% Diagrama de estado UML que muestre las transiciones operacionales de la clase Simulation (Running, Paused, Step).
+% TODO: Insertar diagrama de estado UML que muestre las transiciones operacionales de la clase Simulation (Running, Paused, Step).
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter-06/maquina_estados_temporal.pdf}
+% \includegraphics[width=0.75\textwidth]{figures/chapter-06/maquina_estados_simulacion.pdf}
 \caption{Máquina de estados finitos que rige la clase Simulation, ilustrando las transiciones entre la pausa, la ejecución continua y el avance paso a paso controlado.}
 \label{fig:maquina_estados_temporal}
 \end{figure}
@@ -354,10 +354,10 @@ La orquestación de interacciones es particularmente crítica cuando coexisten m
 
 Este algoritmo iterativo de complejidad espacial $\mathcal{O}(1)$ y temporal $\mathcal{O}(k)$ (donde $k$ es el número de viewports activos) asegura que la alteración manual del autómata no interrumpa el hilo de simulación subyacente. La incorporación del sistema \textit{Multi-Viewport} consolida al software como un laboratorio algorítmico, proporcionando la infraestructura modular requerida para sintetizar y depurar los circuitos lógicos propuestos en el Capítulo \ref{cap:dinamica_particulas}.
 
-% Diagrama de componentes del Viewport, ilustrando la agregación de Automaton, Simulation, Cámara y Manejadores de Input dentro de un solo contenedor.
+% TODO: Insertar diagrama de componentes del Viewport, ilustrando la agregación de Automaton, Simulation, Cámara y Manejadores de Input dentro de un solo contenedor.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/chapter-06/composicion_viewport.pdf}
+% \includegraphics[width=0.75\textwidth]{figures/chapter-06/composicion_viewport.pdf}
 \caption{Estructura interna del sistema Multi-Viewport. Se muestra el encapsulamiento de los motores lógicos y operacionales bajo un mismo contexto de representación visual.}
 \label{fig:composicion_viewport}
 \end{figure}
@@ -409,10 +409,10 @@ El proceso de renderizado iterativo se formaliza en el Algoritmo \ref{alg:render
 
 Al finalizar este proceso, la malla ortogonal de memoria se percibe visualmente como una teselación hexagonal perfecta, cumpliendo con el requerimiento funcional de fidelidad topológica (RF-04). Esta representación visual es el sustento para la captura de los datos estadísticos y la observación de los atractores en las reglas \textit{Spiral} y \textit{Beehive}, ya que permite al investigador identificar patrones emergentes que en una matriz de datos crudos serían imperceptibles \cite{Basurto2009}.
 
-% Diagrama que muestre la jerarquía de herencia de AutomatonRenderer y sus especializaciones (HexRenderer, SquareRenderer).
+% TODO: Insertar diagrama que muestre la jerarquía de herencia de AutomatonRenderer y sus especializaciones (HexRenderer, SquareRenderer).
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter-06/jerarquia_renderizado.pdf}
+% \includegraphics[width=0.8\textwidth]{figures/chapter-06/jerarquia_renderizadores.pdf}
 \caption{Arquitectura del subsistema de visualización. Se ilustra cómo las especializaciones de renderizado encapsulan la lógica de transformación geométrica sin afectar al núcleo de simulación.}
 \label{fig:jerarquia_renderizado}
 \end{figure}
@@ -464,10 +464,10 @@ La interacción con el autómata celular complejo requiere de herramientas de mo
 
 Para optimizar el área de trabajo, la interfaz evolucionó hacia un modelo de contenedores acoplables (\textit{Docking}), donde cada panel puede ser reubicado según las necesidades del experimento. La comunicación entre los paneles y el simulador se realiza mediante el uso de referencias no propietarias (\textit{raw pointers} o \textit{weak references}) hacia el \textit{Viewport} activo. Este patrón de diseño asegura que la interfaz pueda consultar y modificar el estado del autómata (RF-03) sin romper el encapsulamiento del núcleo algebraico, manteniendo la integridad de las estructuras \texttt{BitArray} descritas en la Sección \ref{sec:nucleo_simulacion}.
 
-% Diagrama de la jerarquía de la interfaz, mostrando la relación entre la clase Application, el sistema de Docking y los paneles de herramientas.
+% TODO: Insertar diagrama de la jerarquía de la interfaz, mostrando la relación entre la clase Application, el sistema de Docking y los paneles de herramientas.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/chapter-06/arquitectura_gui.pdf}
+% \includegraphics[width=0.85\textwidth]{figures/chapter-06/arquitectura_gui.pdf}
 \caption{Modelo estructural de la interfaz de usuario. Se ilustra la independencia de los paneles analíticos respecto al ciclo de simulación central.}
 \label{fig:arquitectura_gui}
 \end{figure}
