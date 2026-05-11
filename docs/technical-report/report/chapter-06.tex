@@ -5,4 +5,523 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Estructuración lógica y arquitectura computacional del motor de simulación}
-\label{cap:estructura_arquitectura}
+\label{cap:arquitectura_software}
+
+\abstract*{Este capítulo formaliza la arquitectura de software desarrollada para la experimentación con autómatas celulares complejos. Se detallan las capas de abstracción empleadas para aislar la lógica matemática de la representación visual, estableciendo un marco robusto y extensible. A partir de los fundamentos establecidos en los Capítulos \ref{cap:geometria_computacional} y \ref{cap:isomorfismos}, se describe la transición del modelo analítico hacia un artefacto computacional funcional, garantizando que la implementación en C/C++ preserve las propiedades de computabilidad y los isomorfismos topológicos demostrados previamente.}
+
+\abstract{Este capítulo formaliza la arquitectura de software desarrollada para la experimentación con autómatas celulares complejos. Se detallan las capas de abstracción empleadas para aislar la lógica matemática de la representación visual, estableciendo un marco robusto y extensible. \newline\indent A partir de los fundamentos establecidos en los Capítulos \ref{cap:geometria_computacional} y \ref{cap:isomorfismos}, se describe la transición del modelo analítico hacia un artefacto computacional funcional, garantizando que la implementación en C/C++ preserve las propiedades de computabilidad y los isomorfismos topológicos demostrados previamente.}
+
+\section{Especificación formal de requerimientos del sistema}
+\label{sec:requerimientos}
+
+La construcción de un simulador capaz de validar la computabilidad en autómatas celulares complejos exige una transición rigurosa desde la teoría axiomática hacia la ingeniería de software. Como se estableció en la Sección \ref{sec:objetivos}, el sistema no debe limitarse a una visualización estática, sino que debe actuar como un laboratorio computacional para la síntesis de operadores booleanos mediante colisiones de partículas (gliders).
+
+Para garantizar la viabilidad de los experimentos descritos en el Capítulo \ref{cap:dinamica_particulas}, el diseño del software se fundamenta en una especificación técnica que prioriza el determinismo de la función de transición $\delta$ y la eficiencia asintótica de las estructuras de datos. A continuación, se desglosan los requerimientos que rigen el comportamiento y la calidad del sistema.
+
+\subsection{Taxonomía de requerimientos funcionales}
+
+Los requerimientos funcionales definen las capacidades operativas esenciales que el motor de simulación debe ejecutar para satisfacer los objetivos analíticos de la investigación. Estas capacidades permiten la manipulación del espacio celular $\mathcal{L}$ y la observación de la dinámica de los atractores.
+
+% RF-01: Simulación concurrente
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-01} \\ \hline
+\textbf{Nombre:} & Instanciación múltiple de entornos evolutivos (Multi-Viewport) \\ \hline
+\textbf{Descripción:} & El sistema debe permitir la ejecución simultánea de múltiples instancias independientes de simulación, cada una con su propia configuración de regla, topología y estado inicial, operando de forma aislada. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para la gestión de entornos múltiples.}
+\label{tab:rf01}
+\end{table}
+
+% RF-02: Reconfiguración dinámica
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-02} \\ \hline
+\textbf{Nombre:} & Reconfiguración dinámica de la función de transición y topología \\ \hline
+\textbf{Descripción:} & El motor debe permitir la modificación de las reglas de evolución (e.g., \textit{Spiral}, \textit{Beehive}) y la estructura de la malla en tiempo de ejecución, sin necesidad de reiniciar el ciclo principal de la aplicación. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para la flexibilidad paramétrica.}
+\label{tab:rf02}
+\end{table}
+
+% RF-03: Interacción con el espacio de estados
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-03} \\ \hline
+\textbf{Nombre:} & Manipulación interactiva del espacio de estados discretos \\ \hline
+\textbf{Descripción:} & Se debe proporcionar una interfaz que permita al usuario editar el estado de celdas individuales en tiempo real, facilitando la construcción manual de configuraciones iniciales para experimentos de colisión de gliders. \\ \hline
+\textbf{Prioridad:} & Media \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para la edición de mallas.}
+\label{tab:rf03}
+\end{table}
+
+% RF-04: Mapeo Topológico
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-04} \\ \hline
+\textbf{Nombre:} & Ejecución del isomorfismo hexagonal-ortogonal \\ \hline
+\textbf{Descripción:} & El sistema debe aplicar las ecuaciones de transformación analítica definidas en la Ecuación \eqref{eq:mapeo_direccional} para emular una retícula hexagonal sobre un sustrato de memoria ortogonal de $2 \times 2$. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para la fidelidad topológica.}
+\label{tab:rf04}
+\end{table}
+
+\subsection{Restricciones y atributos de calidad (Requerimientos no funcionales)}
+
+Los requerimientos no funcionales establecen los límites de eficiencia y mantenibilidad bajo los cuales debe operar el artefacto. Estos criterios aseguran que el análisis asintótico de memoria $S(n) = \mathcal{O}(n)$ presentado en el Capítulo \ref{cap:geometria_computacional} se cumpla en la implementación física.
+
+% RNF-01: Eficiencia espacial
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RNF-01} \\ \hline
+\textbf{Nombre:} & Optimización de la huella de memoria (BitArray) \\ \hline
+\textbf{Descripción:} & Para minimizar el consumo de recursos, el estado binario de la red debe almacenarse utilizando arreglos de bits compactos, reduciendo la redundancia de datos respecto a representaciones basadas en enteros. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento no funcional para la eficiencia de almacenamiento.}
+\label{tab:rnf01}
+\end{table}
+
+% RNF-02: Modularidad
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RNF-02} \\ \hline
+\textbf{Nombre:} & Desacoplamiento estructural de responsabilidades \\ \hline
+\textbf{Descripción:} & La arquitectura debe estar dividida en capas (Núcleo, Control, Renderizado y Administración) que se comuniquen mediante interfaces abstractas, permitiendo la modificación de la representación visual sin alterar la lógica de simulación. \\ \hline
+\textbf{Prioridad:} & Media \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento no funcional para la mantenibilidad.}
+\label{tab:rnf02}
+\end{table}
+
+% RNF-03: Sincronismo
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RNF-03} \\ \hline
+\textbf{Nombre:} & Determinismo y consistencia temporal (Double Buffering) \\ \hline
+\textbf{Descripción:} & La actualización de las generaciones debe ser atómica y determinista. Se requiere la implementación de un doble buffer de memoria para evitar que la actualización de una celda interfiera con el cálculo de sus vecinos en el mismo paso temporal. \\ \hline
+\textbf{Prioridad:} & Crítica \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento no funcional para la integridad lógica.}
+\label{tab:rnf03}
+\end{table}
+
+% TODO: Insertar diagrama de bloques que ilustre la jerarquía de requerimientos y su relación con el ciclo de vida de la simulación.
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.8\textwidth]{figures/chapter-06/jerarquia_requerimientos.pdf}
+\caption{Mapa conceptual de la interdependencia entre los requerimientos funcionales de simulación y las restricciones de diseño arquitectónico.}
+\label{fig:jerarquia_req}
+\end{figure}
+
+Como se observa en las tablas anteriores, la prioridad crítica recae en la preservación del determinismo temporal (RNF-03) y la fidelidad del mapeo topológico (RF-04). Sin el cumplimiento estricto de estos parámetros, la síntesis de compuertas lógicas mediante colisiones de gliders, analizada en la Sección \ref{sec:objetivos}, carecería de validez empírica, dado que cualquier error en la propagación de estados invalidaría el isomorfismo con los circuitos booleanos.
+
+
+
+\section{Topología arquitectónica general y abstracción en capas}
+\label{sec:topologia_arquitectonica}
+
+Una vez establecidos los requerimientos funcionales y las restricciones de calidad en la Sección \ref{sec:requerimientos}, es imperativo definir la estructura macroscópica que permite al artefacto computacional operar bajo tales parámetros. El diseño del simulador se fundamenta en un modelo de arquitectura estratificada o en capas, el cual garantiza un desacoplamiento estricto entre la lógica matemática del autómata celular y los mecanismos de interacción y renderizado.
+
+Esta estratificación es fundamental para preservar la integridad de la función de transición $\delta$, definida formalmente en el Capítulo \ref{cap:teoria_formal}. Al aislar el núcleo de simulación, se asegura que las optimizaciones espaciales de complejidad $S(n) = \mathcal{O}(n)$ discutidas en la Sección \ref{sec:analisis_complejidad_mapeo} no se vean comprometidas por la sobrecarga del procesamiento de eventos de usuario o la latencia del subsistema gráfico.
+
+\subsection{Diagrama de la arquitectura del sistema}
+
+La arquitectura del sistema se articula mediante cuatro estratos jerárquicos con responsabilidades unívocamente definidas. El flujo de información es bidireccional en términos de control, pero estrictamente unidireccional en términos de dependencias lógicas, lo que facilita la mantenibilidad y la extensibilidad del motor.
+
+% TODO: Insertar diagrama de arquitectura general (Diagrama de bloques de 4 capas: Núcleo, Control, Representación y Aplicación)
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.85\textwidth]{figures/chapter-06/arquitectura_bloques.pdf}
+\caption{Diagrama estructural de la arquitectura del sistema. Se ilustra la jerarquía de capas y el aislamiento del núcleo de simulación respecto a la interfaz de usuario.}
+\label{fig:diagrama_arquitectura}
+\end{figure}
+
+Como se observa en la Figura \ref{fig:diagrama_arquitectura}, el sistema opera bajo un esquema de orquestación donde la capa superior gestiona el ciclo de vida, mientras que la capa inferior garantiza la ejecución determinista de la dinámica celular. Este diseño permite que múltiples instancias de simulación coexistan sin colisiones de memoria, cumpliendo así con el requerimiento funcional RF-01.
+
+\subsection{Taxonomía de las capas estructurales}
+
+A continuación, se describen conceptualmente las cuatro divisiones fundamentales que componen la topología del simulador:
+
+\begin{enumerate}
+    \item \textbf{Núcleo de Simulación (Simulation Core):} Constituye la capa de abstracción de más bajo nivel y el corazón matemático del proyecto. Su responsabilidad es gestionar la representación del espacio celular $\mathcal{L}$ y la evaluación de la vecindad $N$. Implementa las estructuras de datos optimizadas (como \texttt{BitArray} y \texttt{GridStorage}) y ejecuta la lógica de actualización basada en la técnica de \textit{double buffering} para garantizar el sincronismo perfecto exigido por la teoría formal \cite{Toffoli1987}.
+    
+    \item \textbf{Control de Simulación (Simulation Control):} Esta capa actúa como un mediador entre el estado estático del autómata y su evolución dinámica. Gestiona el dominio temporal, controlando la velocidad de ejecución (pasos por segundo) y la sincronización de los hilos de procesamiento en caso de existir concurrencia. Es la encargada de invocar el cálculo de la nueva generación basándose en los parámetros de la regla activa (e.g., \textit{Spiral}).
+    
+    \item \textbf{Representación y Visualización (Viewport System):} Se encarga de la traducción de los estados binarios almacenados en el núcleo hacia entidades geométricas renderizables. Implementa los isomorfismos espaciales demostrados en el Capítulo \ref{cap:isomorfismos}, transformando la lógica hexagonal en una representación visual coherente para el usuario. Esta capa es independiente de la simulación; es decir, el renderizado puede pausarse o modificarse sin alterar la evolución del sistema dinámico subyacente.
+    
+    \item \textbf{Interfaz Gráfica y Administración Global (Application Layer):} Es el estrato de más alto nivel que coordina la aplicación en su totalidad. Gestiona el ciclo principal (\textit{main loop}), la captura de eventos del teclado y ratón, y la administración de los paneles de configuración. Su función principal es la orquestación de los distintos \textit{Viewports}, permitiendo la reconfiguración dinámica de las reglas en tiempo de ejecución (RF-02) mediante una interfaz no obstructiva.
+\end{enumerate}
+
+Esta separación de responsabilidades no solo satisface los criterios de ingeniería de software, sino que proporciona un entorno controlado para validar las hipótesis de computabilidad universal planteadas en el Capítulo \ref{cap:preliminares}. Al garantizar que la visualización (Capa 3) es un reflejo fiel pero desacoplado de la lógica (Capa 1), los resultados experimentales sobre la colisión de partículas poseen un sustento técnico irrefutable.
+
+
+
+\section{Núcleo de simulación: Lógica fundamental y representación de estados}
+\label{sec:nucleo_simulacion}
+
+Una vez establecida la topología por capas en la Sección \ref{sec:topologia_arquitectonica}, es necesario profundizar en el diseño del \textit{Simulation Core}. Este componente constituye la realización física del modelo matemático definido en la Sección \ref{sec:fundamentacion_conjuntista}, donde el autómata celular se concibe como una cuádrupla $(\mathcal{L}, S, N, \delta)$. La arquitectura del núcleo se centra en encapsular esta definición dentro de estructuras de datos que optimicen tanto el tiempo de acceso como el consumo de memoria, permitiendo la experimentación con las reglas complejas analizadas en el Capítulo \ref{cap:dinamica_particulas}.
+
+\subsection{Encapsulamiento del sistema dinámico}
+
+La entidad central del motor es la clase \texttt{Automaton}. Su función es integrar de manera coherente los elementos que rigen la evolución del sistema. A diferencia de implementaciones monolíticas tradicionales \cite{Basurto2009}, esta clase actúa como un orquestador que vincula tres componentes fundamentales:
+
+\begin{itemize}
+    \item \textbf{La Regla de Evolución ($\delta$):} Encapsulada mediante un objeto de tipo \texttt{Rule}, el cual define la lógica de transición específica (e.g., \textit{Spiral} o \textit{Beehive}) sin alterar el resto del motor.
+    \item \textbf{La Topología del Espacio ($N$):} Define la métrica de vecindad. En este proyecto, se implementa el mapeo submatricial de $2 \times 2$ demostrado en la Sección \ref{sec:mapeo_submatricial}, permitiendo que una red ortogonal se comporte isomorfamente como una hexagonal.
+    \item \textbf{El Almacenamiento Espacial ($\mathcal{L}$):} Gestionado por la clase \texttt{GridStorage}, la cual administra la memoria física de las celdas.
+\end{itemize}
+
+Esta centralización simplifica la reconstrucción del autómata ante cambios de configuración. Al modificar parámetros como el tamaño de la malla o la regla de transición, la clase \texttt{Automaton} garantiza que los isomorfismos establecidos en el Capítulo \ref{cap:isomorfismos} se mantengan consistentes, evitando estados inconsistentes durante la reconfiguración en tiempo de ejecución (RF-02).
+
+\subsection{Operaciones estructurales y evolutivas}
+
+El núcleo ejecuta operaciones críticas que permiten la transición del estado global de la red $\mathcal{C}_t \to \mathcal{C}_{t+1}$. La operación más relevante es el cómputo del paso de simulación, el cual debe realizarse de forma sincrónica para respetar la definición axiomática del sistema. En el Algoritmo \ref{alg:evolucion_sincrona} se describe este proceso, el cual integra la evaluación de la vecindad extendida definida en la Sección \ref{sec:ajuste_vecindad}.
+
+\begin{algorithm}[H]
+\caption{Cómputo de la transición sincrónica de la red.}\label{alg:evolucion_sincrona}
+\begin{algorithmic}
+\STATE 
+\STATE {\textsc{UpdateStep}}$(\mathcal{G}, \delta)$
+\STATE \hspace{0.5cm}\textbf{for each} $i, j$ \textbf{ in } $\mathcal{L}$
+\STATE \hspace{1.0cm}$v \gets$ \textsc{GetNeighborhood}$(\mathcal{G}, i, j)$
+\STATE \hspace{1.0cm}$s' \gets \delta(v)$
+\STATE \hspace{1.0cm}\textsc{SetNextState}$(\mathcal{G}, i, j, s')$
+\STATE \hspace{0.5cm}\textsc{SwapBuffers}$(\mathcal{G})$
+\STATE \textbf{return} $\mathcal{G}$
+\end{algorithmic}
+\end{algorithm}
+
+Además de la evolución temporal, el núcleo permite el redimensionamiento dinámico del espacio discreto y la modificación manual de estados (RF-03). Debido a la separación entre el almacenamiento y la lógica de transición, estas operaciones poseen una complejidad temporal de $\mathcal{O}(1)$ para accesos individuales y $\mathcal{O}(n)$ para transformaciones globales, alineándose con las cotas establecidas en la Sección \ref{sec:analisis_asintotico_mapeo}.
+
+\subsection{Estructuras de almacenamiento discreto y optimización espacial}
+
+La gestión de memoria en el simulador trasciende la simple reserva de arreglos bidimensionales. Se emplea la clase \texttt{GridStorage} para implementar dos estrategias de optimización fundamentales para la viabilidad de la tesis:
+
+\subsubsection{Sustrato de doble almacenamiento (Double Buffering)}
+
+Para evitar las condiciones de carrera lógicas mencionadas en el Capítulo \ref{cap:geometria_computacional}, el sistema mantiene dos búferes de memoria: el \textit{Front Buffer} (lectura) y el \textit{Back Buffer} (escritura). Como se fundamentó en la Ecuación \eqref{eq:complejidad_espacial_linear}, esta técnica duplica el requerimiento de memoria física para garantizar un sincronismo perfecto, permitiendo que la evaluación de $\delta$ dependa únicamente del estado global en el tiempo $t$ \cite{Toffoli1987}.
+
+\subsubsection{Representación mediante arreglos de bits (BitArray)}
+
+Dado que los estados $S$ de los autómatas complejos estudiados son binarios (0 o 1), el uso de tipos de datos estándar como \texttt{int} (32 bits) resultaría en un desperdicio del 96.8\% del espacio. En su lugar, se implementa una estructura de tipo \texttt{BitArray}, donde cada celda ocupa exactamente un bit. 
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Representación} & \textbf{Espacio por Celda} & \textbf{Espacio para $10^6$ celdas} \\ \hline
+Matriz estándar (\texttt{int}) & 32 bits & $\approx$ 4.0 MB \\ \hline
+Matriz optimizada (\texttt{char}) & 8 bits & $\approx$ 1.0 MB \\ \hline
+\textbf{Estructura BitArray} & \textbf{1 bit} & \textbf{$\approx$ 0.125 MB} \\ \hline
+\end{tabular}
+\caption{Comparativa de eficiencia espacial en la representación del estado celular.}
+\label{tab:eficiencia_memoria}
+\end{table}
+
+Esta optimización reduce la complejidad espacial efectiva del sistema, facilitando la simulación de colisiones de gliders en mallas extensas que, de otro modo, presentarían cuellos de botella en la caché del procesador. Como se detalló en el análisis arquitectónico del sistema, esta decisión es el sustento para mantener una ejecución determinista sin comprometer el rendimiento de la aplicación activa.
+
+% TODO: Insertar diagrama de clases que muestre la relación entre Automaton, GridStorage y BitArray.
+\begin{figure}[ht]
+\centering
+% \begin{tikzpicture} ... \end{tikzpicture}
+\caption{Diagrama de encapsulamiento del núcleo. Se observa la agregación de la lógica de reglas y el almacenamiento optimizado dentro de la entidad Automaton.}
+\label{fig:diagrama_clases_nucleo}
+\end{figure}
+
+
+
+\section{Control de la dinámica temporal del autómata}
+\label{sec:control_dinamica}
+
+Habiendo formalizado la encapsulación del espacio de estados $\mathcal{L}$ y la función local de transición $\delta$ dentro del núcleo de simulación (Sección \ref{sec:nucleo_simulacion}), es imperativo definir el estrato arquitectónico responsable de la orquestación del tiempo. En la fundamentación teórica (Capítulo \ref{cap:teoria_formal}), la evolución temporal del autómata celular se concibe axiomáticamente como una progresión discreta $t \in \mathbb{N}$. Sin embargo, en el dominio computacional, esta progresión lógica debe administrarse mecánicamente para sincronizarse con el hardware físico y la interacción del usuario.
+
+Esta capa, posicionada jerárquicamente sobre el núcleo según la topología descrita en la Sección \ref{sec:topologia_arquitectonica}, aísla el comportamiento estático de las estructuras de memoria y dicta exclusivamente cuándo y cómo el sistema transita de una configuración $\mathcal{C}_t$ a $\mathcal{C}_{t+1}$.
+
+\subsection{Delimitación entre el dominio lógico y el temporal}
+
+Para gestionar la dimensión cronológica, se diseña la clase \texttt{Simulation} como administrador operacional principal. La decisión de separar la entidad \texttt{Automaton} respecto a la entidad \texttt{Simulation} obedece a un principio fundamental de diseño de software: la separación de responsabilidades (\textit{Separation of Concerns}). 
+
+Mientras que el \texttt{Automaton} sabe \textit{cómo} evolucionar dadas las reglas topológicas analizadas en el Capítulo \ref{cap:isomorfismos}, carece de información sobre la frecuencia con la que debe hacerlo. Al instanciar la clase \texttt{Simulation} como un contenedor que envuelve al autómata subyacente, se logra una ventaja arquitectónica crítica: el motor algebraico permanece puramente matemático y predecible, mientras que el controlador temporal maneja variables operacionales (como el tiempo transcurrido, las pausas y los incrementos manuales) sin contaminar el cálculo de la complejidad $\mathcal{O}(n)$.
+
+\subsection{Administración de estados de ejecución y sincronización}
+
+La clase \texttt{Simulation} centraliza las operaciones de control de flujo, garantizando que los análisis dinámicos sobre configuraciones móviles (detallados en el Capítulo \ref{cap:dinamica_particulas}) puedan ser observados empíricamente de manera controlada. Las responsabilidades principales de este módulo incluyen:
+
+\begin{itemize}
+    \item \textbf{Control de velocidad de simulación (TPS):} El sistema desacopla explícitamente los cuadros por segundo de la representación visual (\textit{Frames Per Second}) de los pasos lógicos por segundo de la simulación (\textit{Ticks Per Second} o TPS). Esto se implementa mediante un acumulador de tiempo que compensa las fluctuaciones del procesador, asegurando que el autómata evolucione a una velocidad determinista fijada por el usuario, independientemente del rendimiento gráfico.
+    \item \textbf{Máquina de estados de ejecución:} La orquestación temporal opera bajo una máquina de estados finitos que admite condiciones operativas como \textsc{Paused}, \textsc{Running} y \textsc{Step}. Esta estructura resulta indispensable para la síntesis heurística de circuitos (Sección \ref{sec:objetivos}), permitiendo pausar el universo, inyectar un \textit{glider} manualmente y reanudar el cómputo sin perder el rastro generacional.
+    \item \textbf{Randomización estocástica inicial:} El controlador expone rutinas para inyectar entropía en el espacio de estados. Proporciona la capacidad de sobrescribir el arreglo \texttt{BitArray} con una distribución uniforme de estados activos (1) e inactivos (0), estableciendo el punto de partida $\mathcal{C}_0$ requerido para observar tiempos de estabilización y convergencia a atractores.
+\end{itemize}
+
+El proceso central que ejecuta el control temporal en cada iteración del bucle principal se formaliza en el Algoritmo \ref{alg:control_temporal}. El uso de un acumulador evita la pérdida de iteraciones lógicas (\textit{dropped ticks}) durante caídas de rendimiento del sistema.
+
+\begin{algorithm}[H]
+\caption{Bucle de control temporal y orquestación del autómata.}\label{alg:control_temporal}
+\begin{algorithmic}
+\STATE 
+\STATE \textsc{ProcessTimeStep}($\mathcal{S}, \Delta t$)
+\STATE \hspace{0.5cm}$ \mathcal{S}_{acumulador} \gets \mathcal{S}_{acumulador} + \Delta t $
+\STATE \hspace{0.5cm}$ t_{paso} \gets 1.0 / \mathcal{S}_{tps\_objetivo} $
+\STATE \hspace{0.5cm}\textbf{while} $ \mathcal{S}_{acumulador} \geq t_{paso} $ \textbf{do}
+\STATE \hspace{1.0cm}\textbf{if} $ \mathcal{S}_{estado} = \textsc{Running} $ \textbf{then}
+\STATE \hspace{1.5cm}\textsc{UpdateStep}($\mathcal{S}_{automata}$)
+\STATE \hspace{1.5cm}$ \mathcal{S}_{generacion} \gets \mathcal{S}_{generacion} + 1 $
+\STATE \hspace{1.0cm}\textbf{end if}
+\STATE \hspace{1.0cm}$ \mathcal{S}_{acumulador} \gets \mathcal{S}_{acumulador} - t_{paso} $
+\STATE \hspace{0.5cm}\textbf{end while}
+\STATE \hspace{0.5cm}\textbf{return}
+\end{algorithmic}
+\end{algorithm}
+
+Al mantener la semántica temporal aislada del renderizado visual y del estado lógico intrínseco, se establece un marco altamente robusto para experimentación. Cualquier alteración a la topología o a la regla de propagación (RF-02) no requiere modificación alguna en la lógica del temporizador expuesto en esta sección.
+
+% TODO: Insertar diagrama de estado UML que muestre las transiciones operacionales de la clase Simulation (Running, Paused, Step).
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.75\textwidth]{figures/chapter-06/maquina_estados_simulacion.pdf}
+\caption{Máquina de estados finitos que rige la clase Simulation, ilustrando las transiciones entre la pausa, la ejecución continua y el avance paso a paso controlado.}
+\label{fig:maquina_estados_temporal}
+\end{figure}
+
+
+
+\section{Aislamiento espacial y multiplicidad de entornos (Sistema Multi-Viewport)}
+\label{sec:aislamiento_espacial}
+
+La validación empírica del isomorfismo topológico definido en el Capítulo \ref{chap:isomorfismos} exige un entorno capaz de contrastar distintos modelos geométricos y dinámicos de manera concurrente. Para satisfacer el requerimiento funcional de instanciación múltiple (RF-01, Tabla \ref{tab:rf01}), la arquitectura del sistema implementa un modelo de aislamiento espacial denominado \textit{Multi-Viewport}. 
+
+Este modelo trasciende la capacidad de una simple interfaz gráfica al establecer contenedores lógicos que agrupan y aíslan el núcleo matemático (Sección \ref{sec:nucleo_simulacion}) y el control temporal (Sección \ref{sec:control_dinamica}). En consecuencia, se garantiza la coexistencia paralela de diversos universos celulares sin incurrir en colisiones de memoria ni en condiciones de carrera durante la evaluación de la función de transición discreta.
+
+\subsection{Instanciación independiente de contextos evolutivos}
+\label{subsec:instanciacion_viewport}
+
+En términos arquitectónicos, un \textit{Viewport} se define como una entidad superior que representa una instancia completamente independiente de simulación y visualización. Cada objeto \textit{Viewport} posee un ciclo de vida encapsulado y mantiene referencias exclusivas hacia sus propias instancias de las clases \texttt{Automaton} y \texttt{Simulation}.
+
+Esta delimitación estructural permite evaluar el Teorema de equivalencia computacional (Sección \ref{subsec:teorema_equivalencia_computacional}) empíricamente. Por ejemplo, es posible inicializar un \textit{Viewport} $A$ configurado con una topología estrictamente ortogonal y una regla de propagación clásica, mientras simultáneamente un \textit{Viewport} $B$ ejecuta el mapeo submatricial direccional regido por la dinámica \textit{Spiral}. Debido a que la memoria de red (\texttt{GridStorage}) de cada autómata reside en espacios de direcciones distintos, el aislamiento es absoluto; el comportamiento divergente o convergente de los atractores puede observarse en tiempo real sin perturbaciones cruzadas.
+
+\subsection{Composición y orquestación del entorno aislado}
+
+Para proporcionar una interfaz de observación coherente sobre el sustrato celular mapeado, cada \textit{Viewport} requiere administrar componentes operativos locales. Esta composición interna se divide fundamentalmente en cuatro módulos:
+
+\begin{enumerate}
+    \item \textbf{Cámaras independientes:} Cada entorno gestiona su propia matriz de proyección y transformación afín sobre el espacio continuo $\mathbb{R}^2$. Esto permite operaciones de traslación y acercamiento (\textit{pan} y \textit{zoom}) locales, facilitando el seguimiento de configuraciones móviles (\textit{gliders}) en un universo sin afectar la vista del resto.
+    \item \textbf{Layout espacial:} Define los límites de renderizado (\textit{bounding box}) del entorno dentro de la ventana global de la aplicación.
+    \item \textbf{Configuración de renderizado:} Mantiene descriptores visuales específicos, tales como las paletas de colores asociadas a los estados binarios del alfabeto $\Sigma$ y la habilitación de rejillas delimitadoras.
+    \item \textbf{Manejadores de interacción:} Subrutinas encargadas de interceptar los eventos periféricos (clics de ratón) y traducirlos hacia el dominio discreto.
+\end{enumerate}
+
+La orquestación de interacciones es particularmente crítica cuando coexisten múltiples topologías. Cuando el usuario interactúa con la pantalla, el sistema debe determinar qué universo celular recibe el estímulo. Posteriormente, aplica el mapeo espacial inverso analizado en la Sección 3.5.1 para resolver la coordenada continua $(x,y)$ hacia su correspondiente índice matricial discreto $(i,j)$. Este mecanismo de despacho (RF-03) se describe formalmente en el Algoritmo \ref{alg:despacho_eventos}.
+
+\begin{algorithm}[H]
+\caption{Despacho global de interacciones de usuario en entornos Multi-Viewport.}\label{alg:despacho_eventos}
+\begin{algorithmic}
+\STATE 
+\STATE \textsc{HandleInput}($\mathcal{V}_{list}, coord\_x, coord\_y, estado\_click$)
+\STATE \hspace{0.5cm}\textbf{for each} $v$ \textbf{ in } $\mathcal{V}_{list}$
+\STATE \hspace{1.0cm}\textbf{if} \textsc{IsPointInsideBounds}($v, coord\_x, coord\_y$) \textbf{then}
+\STATE \hspace{1.5cm}$ \Delta x, \Delta y \gets $ \textsc{GetCameraOffset}($v$)
+\STATE \hspace{1.5cm}$ x_{local} \gets coord\_x - \Delta x $
+\STATE \hspace{1.5cm}$ y_{local} \gets coord\_y - \Delta y $
+\STATE \hspace{1.5cm}$ i, j \gets $ \textsc{InverseSpatialMapping}($v.topologia, x_{local}, y_{local}$)
+\STATE \hspace{1.5cm}\textbf{if} $ i, j $ \textbf{ in } $v.automata. \mathcal{L}$ \textbf{then}
+\STATE \hspace{2.0cm}\textsc{SetNextState}($v.automata, i, j, estado\_click$)
+\STATE \hspace{1.5cm}\textbf{end if}
+\STATE \hspace{1.5cm}\textbf{break}
+\STATE \hspace{1.0cm}\textbf{end if}
+\STATE \hspace{0.5cm}\textbf{end for}
+\STATE \hspace{0.5cm}\textbf{return}
+\end{algorithmic}
+\end{algorithm}
+
+Este algoritmo iterativo de complejidad espacial $\mathcal{O}(1)$ y temporal $\mathcal{O}(k)$ (donde $k$ es el número de viewports activos) asegura que la alteración manual del autómata no interrumpa el hilo de simulación subyacente. La incorporación del sistema \textit{Multi-Viewport} consolida al software como un laboratorio algorítmico, proporcionando la infraestructura modular requerida para sintetizar y depurar los circuitos lógicos propuestos en el Capítulo \ref{cap:dinamica_particulas}.
+
+% TODO: Insertar diagrama de componentes del Viewport, ilustrando la agregación de Automaton, Simulation, Cámara y Manejadores de Input dentro de un solo contenedor.
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.75\textwidth]{figures/chapter-06/composicion_viewport.pdf}
+\caption{Estructura interna del sistema Multi-Viewport. Se muestra el encapsulamiento de los motores lógicos y operacionales bajo un mismo contexto de representación visual.}
+\label{fig:composicion_viewport}
+\end{figure}
+
+
+
+\section{Mapeo geométrico y representación visual discreta}
+\label{sec:mapeo_geometrico}
+
+Una vez garantizado el aislamiento espacial de los entornos en la Sección \ref{sec:aislamiento_espacial}, es necesario formalizar el mecanismo de proyección que traduce las estructuras matemáticas subyacentes hacia entidades gráficas comprensibles por el ojo humano. La transición desde el estado lógico $s \in \Sigma$ hacia una representación visual tangible no es una operación trivial, pues implica la aplicación de las funciones de transformación afín y los isomorfismos espaciales desarrollados en el Capítulo \ref{cap:geometria_computacional}.
+
+En esta capa de la arquitectura, el sistema debe procesar el arreglo de bits (\texttt{BitArray}) y, basándose en la topología activa, generar la geometría correspondiente en el espacio continuo $\mathbb{R}^2$. Este proceso constituye la realización visual del Teorema de equivalencia computacional (Sección \ref{subsec:teorema_equivalencia_computacional}), permitiendo validar que la dinámica de partículas se comporta según lo previsto por la teoría.
+
+\subsection{Desacoplamiento de la geometría y el estado lógico}
+
+El diseño del simulador prioriza un desacoplamiento estricto entre la evaluación de la función de transición $\delta$ y su dibujo en pantalla. Para lograr este objetivo, se introduce la interfaz abstracta \texttt{AutomatonRenderer}. Esta estructura actúa como un contrato de software que define las operaciones necesarias para visualizar un autómata, sin conocer los detalles de su topología interna.
+
+La ventaja técnica de este enfoque radica en la extensibilidad: es posible incorporar múltiples tipos de renderizadores (e.g., ortogonales, hexagonales, o incluso representaciones tridimensionales) y alterar la estética de la simulación sin contaminar ni comprometer la lógica de cómputo descrita en la Sección \ref{sec:nucleo_simulacion}. Este diseño asegura que el motor de simulación permanezca como un artefacto puramente matemático, mientras que el renderizador opera como un observador pasivo.
+
+\subsection{Implementaciones de transformación espacial}
+
+Las especializaciones de la interfaz \texttt{AutomatonRenderer} son las responsables de aplicar las ecuaciones de mapeo direccional definidas en la Ecuación \eqref{eq:mapeo_direccional}. A continuación, se describen las responsabilidades de estas especializaciones, tomando como referencia el renderizado hexagonal:
+
+\begin{itemize}
+    \item \textbf{Generación de mallas dinámicas:} El renderizador calcula la posición de los vértices de cada celda basándose en el radio $r$ y el \textit{offset} de fase definido en la Sección \ref{sec:ajuste_vecindad}.
+    \item \textbf{Mapeo de estados a descriptores visuales:} Traduce el valor binario del estado (0 o 1) hacia propiedades de color y opacidad. En los experimentos de colisión de partículas (Capítulo \ref{cap:dinamica_particulas}), esto permite diferenciar claramente los frentes de onda de las estructuras estables (\textit{still lifes}).
+    \item \textbf{Optimización del ciclo de dibujo:} Dado que el número de celdas $n$ puede ser elevado, el renderizador implementa técnicas de visibilidad para dibujar únicamente las celdas contenidas dentro del área de recorte (\textit{frustum}) del Viewport activo.
+\end{itemize}
+
+El proceso de renderizado iterativo se formaliza en el Algoritmo \ref{alg:renderizado_malla}. Es fundamental observar que este algoritmo posee una complejidad temporal $\mathcal{O}(n)$, alineada con el análisis asintótico del Capítulo \ref{cap:geometria_computacional}.
+
+\begin{algorithm}[H]
+\caption{Proyección visual del espacio de estados discretos.}\label{alg:renderizado_malla}
+\begin{algorithmic}
+\STATE 
+\STATE \textsc{RenderAutomaton}($\mathcal{G}, \mathcal{R}, \mathcal{C}$)
+\STATE \hspace{0.5cm}\textbf{for each} $i, j$ \textbf{ in } $\mathcal{G}.\mathcal{L}$
+\STATE \hspace{1.0cm}$s \gets$ \textsc{GetCellState}($\mathcal{G}, i, j$)
+\STATE \hspace{1.0cm}\textbf{if} $s$ \textbf{ is active then}
+\STATE \hspace{1.5cm}$ x, y \gets $ \textsc{CalculateSpatialPosition}($i, j, \mathcal{G}.topologia$)
+\STATE \hspace{1.5cm}\textbf{if} \textsc{IsVisible}($x, y, \mathcal{C}$) \textbf{then}
+\STATE \hspace{2.0cm}\textsc{DrawHexagonShape}($x, y, \mathcal{R}.color\_activo$)
+\STATE \hspace{1.5cm}\textbf{end if}
+\STATE \hspace{1.0cm}\textbf{end if}
+\STATE \hspace{0.5cm}\textbf{end for}
+\STATE \textbf{return}
+\end{algorithmic}
+\end{algorithm}
+
+Al finalizar este proceso, la malla ortogonal de memoria se percibe visualmente como una teselación hexagonal perfecta, cumpliendo con el requerimiento funcional de fidelidad topológica (RF-04). Esta representación visual es el sustento para la captura de los datos estadísticos y la observación de los atractores en las reglas \textit{Spiral} y \textit{Beehive}, ya que permite al investigador identificar patrones emergentes que en una matriz de datos crudos serían imperceptibles \cite{Basurto2009}.
+
+% TODO: Insertar diagrama que muestre la jerarquía de herencia de AutomatonRenderer y sus especializaciones (HexRenderer, SquareRenderer).
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.8\textwidth]{figures/chapter-06/jerarquia_renderizadores.pdf}
+\caption{Arquitectura del subsistema de visualización. Se ilustra cómo las especializaciones de renderizado encapsulan la lógica de transformación geométrica sin afectar al núcleo de simulación.}
+\label{fig:jerarquia_renderizado}
+\end{figure}
+
+
+
+\section{Orquestación global e interacción asíncrona del sistema}
+\label{sec:orquestacion_global}
+
+Tras haber definido los componentes de renderizado y el aislamiento espacial en las Secciones \ref{sec:aislamiento_espacial} y \ref{sec:mapeo_geometrico}, es imperativo establecer el mecanismo que coordina la coexistencia de estos módulos. La capa superior de la arquitectura es la encargada de administrar el ciclo de vida de la aplicación y procesar los estímulos del usuario de manera no obstructiva. En este nivel, la abstracción matemática se integra con la ingeniería de interfaces para proporcionar un entorno que permita la experimentación con los circuitos lógicos definidos en la Sección \ref{sec:objetivos}.
+
+\subsection{Coordinación del ciclo principal y sincronización de estados}
+
+El coordinador central del sistema se materializa en la clase \texttt{Application}. Esta entidad posee la responsabilidad única de gestionar el bucle principal (\textit{Main Loop}), el cual rige la cadencia de ejecución del simulador. A diferencia de arquitecturas basadas estrictamente en la delegación por eventos, se optó por un modelo de sincronización explícita de estados. Esta decisión técnica se fundamenta en la necesidad de reducir la complejidad accidental del software, garantizando que el flujo de información sea predecible y que la simulación no se vea afectada por latencias en el subsistema de interfaz.
+
+Las responsabilidades de la clase \texttt{Application} incluyen:
+\begin{itemize}
+    \item \textbf{Gestión del ciclo de vida:} Controla la inicialización de los contextos gráficos y la terminación segura de los hilos de simulación.
+    \item \textbf{Procesamiento de eventos globales:} Intercepta las señales del sistema operativo (ventana, teclado y ratón) para despacharlas hacia el \textit{Viewport} activo mediante el Algoritmo \ref{alg:despacho_eventos}.
+    \item \textbf{Arbitraje de instancias:} Administra la lista de entornos evolutivos, permitiendo al usuario alternar entre simulaciones con distintas reglas (e.g., \textit{Spiral} y \textit{Beehive}) sin interrumpir la dinámica de fondo.
+\end{itemize}
+
+El funcionamiento de este coordinador se formaliza en el Algoritmo \ref{alg:ciclo_aplicacion}, donde se observa la secuencia atómica de actualización y dibujo que asegura la consistencia del sistema.
+
+\begin{algorithm}[H]
+\caption{Bucle principal de orquestación del simulador.}\label{alg:ciclo_aplicacion}
+\begin{algorithmic}
+\STATE 
+\STATE \textsc{RunApplication}($\mathcal{A}$)
+\STATE \hspace{0.5cm}\textbf{while} $\mathcal{A}.activo$ \textbf{do}
+\STATE \hspace{1.0cm}$ \Delta t \gets $ \textsc{GetFrameTime}()
+\STATE \hspace{1.0cm}\textsc{PollEvents}()
+\STATE \hspace{1.0cm}\textsc{UpdateInterface}(\textit{ImGui})
+\STATE \hspace{1.0cm}\textbf{for each} $v$ \textbf{ in } $\mathcal{A}.\mathcal{V}_{list}$
+\STATE \hspace{1.5cm}\textsc{ProcessTimeStep}($v, \Delta t$)
+\STATE \hspace{1.0cm}\textbf{end for}
+\STATE \hspace{1.0cm}\textsc{BeginFrame}()
+\STATE \hspace{1.5cm}\textsc{RenderAllViewports}($\mathcal{A}.\mathcal{V}_{list}$)
+\STATE \hspace{1.5cm}\textsc{RenderInterfacePanels}()
+\STATE \hspace{1.0cm}\textsc{EndFrame}()
+\STATE \hspace{0.5cm}\textbf{end while}
+\STATE \textbf{return}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Organización modular de la interfaz de usuario}
+
+La interacción con el autómata celular complejo requiere de herramientas de monitoreo en tiempo real. La arquitectura de la interfaz se fragmenta en paneles independientes implementados mediante la biblioteca \textit{ImGui}, permitiendo un flujo de trabajo asíncrono. Estos paneles se especializan en tareas críticas como la visualización de estadísticas generacionales, la configuración de la apariencia y la graficación de la entropía del sistema analizada en el Capítulo \ref{cap:teoria_formal}.
+
+Para optimizar el área de trabajo, la interfaz evolucionó hacia un modelo de contenedores acoplables (\textit{Docking}), donde cada panel puede ser reubicado según las necesidades del experimento. La comunicación entre los paneles y el simulador se realiza mediante el uso de referencias no propietarias (\textit{raw pointers} o \textit{weak references}) hacia el \textit{Viewport} activo. Este patrón de diseño asegura que la interfaz pueda consultar y modificar el estado del autómata (RF-03) sin romper el encapsulamiento del núcleo algebraico, manteniendo la integridad de las estructuras \texttt{BitArray} descritas en la Sección \ref{sec:nucleo_simulacion}.
+
+% TODO: Insertar diagrama de la jerarquía de la interfaz, mostrando la relación entre la clase Application, el sistema de Docking y los paneles de herramientas.
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.85\textwidth]{figures/chapter-06/arquitectura_gui.pdf}
+\caption{Modelo estructural de la interfaz de usuario. Se ilustra la independencia de los paneles analíticos respecto al ciclo de simulación central.}
+\label{fig:arquitectura_gui}
+\end{figure}
+
+Esta estructura modular permite que el simulador funcione como una plataforma extensible. La adición de nuevas herramientas de análisis, como inspectores de vecindad o pinceles de patrones, se realiza de forma desacoplada, cumpliendo con los atributos de mantenibilidad y modularidad (RNF-02) establecidos al inicio de este capítulo.
+
+
+
+\section{Consecuencias arquitectónicas y proyecciones futuras}
+\label{sec:reflexiones_futuras}
+
+La culminación del diseño del motor de simulación permite realizar un balance analítico sobre la convergencia entre la teoría formal de autómatas celulares y la ingeniería de software. Como se estableció en los objetivos sintéticos (Sección \ref{sec:objetivos}), el sistema debe operar como un sustrato determinista para la validación de isomorfismos topológicos. La arquitectura resultante no es solo un entorno de ejecución, sino un marco de trabajo modular que garantiza que la dinámica observada en las reglas \textit{Spiral} y \textit{Beehive} sea una consecuencia directa de las funciones de transición $\delta$ y no un artefacto de la implementación física.
+
+\subsection{Evaluación de la modularidad y robustez del sistema}
+
+Al contrastar la arquitectura actual con las implementaciones monolíticas iniciales \cite{Basurto2009}, se identifica que el desacoplamiento estratificado ha incrementado la robustez del modelo. La separación en capas (Sección \ref{sec:topologia_arquitectonica}) permite que el núcleo algebraico permanezca invariable ante alteraciones en la interfaz de usuario o en el subsistema de renderizado.
+
+Esta flexibilidad se manifiesta en la capacidad del motor para integrar nuevas topologías de red sin modificar las subrutinas de control temporal. Gracias al uso de la interfaz abstracta \texttt{AutomatonRenderer} (Sección \ref{sec:mapeo_geometrico}), la incorporación de una malla asimétrica o una vecindad de radio $r > 1$ se reduce a la especialización de funciones de mapeo espacial, preservando la integridad del bucle principal gestionado por la clase \texttt{Application}. En términos de ingeniería, se ha logrado que el sistema cumpla con el requerimiento RNF-02 (Tabla \ref{tab:rnf02}), minimizando la complejidad accidental y facilitando la mantenibilidad a largo plazo.
+
+\subsection{Líneas de refinamiento y herramientas analíticas desacopladas}
+
+A pesar de la solidez estructural alcanzada, se identifican áreas donde la subdivisión de responsabilidades puede profundizarse para mejorar la experiencia analítica. Actualmente, la entidad \textit{Viewport} (Sección \ref{sec:aislamiento_espacial}) centraliza tanto la interacción periférica como la administración de cámaras; una evolución prospectiva sugiere la fragmentación de estos roles en módulos de interacción dedicados.
+
+Asimismo, se propone el desarrollo de las siguientes capacidades operativas:
+\begin{itemize}
+    \item \textbf{Sistemas de serialización y persistencia:} Implementar esquemas de guardado en formatos estándar (e.g., JSON o binario crudo) para capturar estados globales $\mathcal{C}_t$. Esto permitiría la replicación exacta de colisiones de \textit{gliders} en diferentes sesiones de investigación.
+    \item \textbf{Herramientas de edición desacopladas:} Evolucionar hacia un modelo de herramientas basadas en pinceles (\textit{Brushes}) y herramientas de selección. Esto facilitaría la síntesis heurística de circuitos complejos descrita en el Capítulo \ref{cap:dinamica_particulas}, permitiendo la inserción atómica de patrones predefinidos (atractores y osciladores).
+\end{itemize}
+
+\subsection{Optimización asintótica y arquitecturas orientadas a datos}
+
+Para trascender los límites de simulación en mallas extensas, donde el número de celdas $n \to \infty$, es imperativo considerar optimizaciones que aprovechen las arquitecturas de cómputo moderno. Aunque el uso de \texttt{BitArray} (Sección \ref{sec:nucleo_simulacion}) optimiza la huella de memoria, la evaluación secuencial de $\delta$ en una CPU unihilo presenta un cuello de botella latente.
+
+En este sentido, se proponen las siguientes rutas de optimización técnica:
+\begin{enumerate}
+    \item \textbf{Paralelización computacional:} Dado que la actualización de un autómata celular es un proceso inherentemente paralelo (cada celda depende únicamente del estado anterior de su vecindad), la función \textsc{UpdateStep} puede ser distribuida en múltiples hilos mediante librerías de concurrencia.
+    \item \textbf{Instrucciones SIMD (Single Instruction, Multiple Data):} El uso de vectores de procesamiento a nivel de registro permitiría evaluar múltiples celdas del \texttt{BitArray} en un solo ciclo de instrucción, reduciendo significativamente el tiempo de computación $T(n)$.
+    \item \textbf{Arquitectura ECS (Entity Component System):} Para la gestión visual de frentes de onda y partículas masivas, una transición hacia un modelo orientado a datos permitiría manejar las subconfiguraciones móviles como entidades independientes, optimizando el uso de la caché del procesador.
+\end{enumerate}
+
+El Algoritmo \ref{alg:prospecto_paralelo} ilustra conceptualmente cómo se estructuraría una actualización paralela dividida en fragmentos espaciales (\textit{chunks}), manteniendo la consistencia del \textit{double buffering}.
+
+\begin{algorithm}[H]
+\caption{Estructura conceptual de evolución paralela por fragmentación.}\label{alg:prospecto_paralelo}
+\begin{algorithmic}
+\STATE 
+\STATE \textsc{ParallelUpdate}($\mathcal{G}, \delta$)
+\STATE \hspace{0.5cm}$ \mathcal{C}_{list} \gets $ \textsc{SubdivideLattice}($\mathcal{G}.\mathcal{L}$)
+\STATE \hspace{0.5cm}\textbf{parallel for each} $c$ \textbf{ in } $\mathcal{C}_{list}$
+\STATE \hspace{1.0cm}\textsc{UpdateChunkStep}($\mathcal{G}, c, \delta$)
+\STATE \hspace{0.5cm}\textbf{end parallel}
+\STATE \hspace{0.5cm}\textsc{SwapBuffers}($\mathcal{G}$)
+\STATE \textbf{return}
+\end{algorithmic}
+\end{algorithm}
+
+Estas proyecciones aseguran que el simulador no solo resuelva las preguntas de investigación del presente Trabajo Terminal, sino que se posicione como una herramienta base para el estudio de la computabilidad universal en sistemas dinámicos discretos de alta complejidad \cite{Kari2005}.
