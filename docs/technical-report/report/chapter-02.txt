@@ -77,10 +77,9 @@ Formalmente, si se aplica una inmersión de esta red hexagonal sobre un sistema 
 
 El uso del sistema de coordenadas oblicuas permite incrustar la topología de base 6 dentro de los límites matemáticos y computacionales de arreglos matriciales discretos. Esta estructura topológica es fundamental en la disciplina de simulación no convencional, debido a que su uniformidad reduce los sesgos angulares (anisotropía) durante la propagación dinámica de información y modelado de trayectorias de partículas complejas.
 
-% TODO: Insertar diagrama comparativo entre la retícula de cuadrícula (con vecindad de Moore/von Neumann) y la retícula hexagonal. Se debe resaltar la igualdad de distancias desde la célula central hacia sus vecinos en la proyección hexagonal.
 \begin{figure}[h]
 \centering
-% \includegraphics[width=0.8\textwidth]{figuras/comparativa_reticulas.png}
+\includegraphics[width=\textwidth]{figures/chapter-02/comparativa_reticulas.pdf}
 \caption{Comparativa geométrica topológica entre el espacio de cuadrícula $\mathbb{Z}^2$ asimétrica y la teselación celular hexagonal isótropa. Se detallan los vectores de desplazamiento $\vec{v}_i$ que definen la vecindad adyacente $\mathcal{N}_{hex}$.}
 \label{fig:topologia_hexagonal}
 \end{figure}
@@ -125,7 +124,7 @@ En la práctica computacional, estas evoluciones suelen representarse mediante d
 
 \begin{figure}[h]
 \centering
-% TODO: [Diagrama esquemático que muestre la aplicación de la función delta sobre una vecindad para producir un estado en t+1, y cómo esto se extiende al mapeo global G entre dos configuraciones completas]
+\includegraphics[width=0.8\textwidth]{figures/chapter-02/mapeo_global.pdf}
 \caption{Representación del mapeo de estados locales a la evolución de la configuración global del sistema.}
 \label{fig:mapeo_global}
 \end{figure}
@@ -154,7 +153,7 @@ El conjunto de configuraciones que conforman el punto fijo o el ciclo límite se
 
 \begin{figure}[h]
 \centering
-% TODO: Insertar diagrama de grafo dirigido que ilustre un espacio de fases discreto. Debe mostrar diversas trayectorias transitorias (nodos conectados por flechas direccionales) convergiendo hacia un punto fijo central y hacia un ciclo límite de periodo mayor a 1.
+\includegraphics[width=\textwidth]{figures/chapter-02/espacio_fases.pdf}
 \caption{Representación esquemática del espacio de fases discreto. Se observan los estados transitorios que conforman las cuencas de atracción convergiendo en estados estables y ciclos límite.}
 \label{fig:espacio_fases}
 \end{figure}
@@ -199,7 +198,7 @@ Es posible observar que la complejidad de las reglas \textit{Spiral} y \textit{B
 
 \begin{figure}[h]
 \centering
-% TODO: Insertar diagrama que muestre la analogía entre una Máquina de Turing y un autómata celular, destacando la transición de estados locales como el motor del procesamiento algorítmico.
+\includegraphics[width=\textwidth]{figures/chapter-02/equivalencia_turing.pdf}
 \caption{Isomorfismo entre el modelo de Máquina de Turing y la evolución dinámica de un autómata celular bidimensional.}
 \label{fig:equivalencia_turing}
 \end{figure}
@@ -237,7 +236,7 @@ Para los propósitos sintéticos de este Trabajo Terminal, orientados a la emula
 
 \begin{figure}[h]
 \centering
-% TODO: Insertar diagrama que ilustre el concepto de estados Jardín del Edén y la no inyectividad. Se debe mostrar de forma esquemática cómo múltiples configuraciones iniciales (C1, C2) mapean al mismo estado resultante (C3), y cómo una configuración de tipo Jardín del Edén (C_GE) carece de flechas entrantes (preimágenes) en el grafo de transición.
+\includegraphics[width=\textwidth]{figures/chapter-02/jardin_eden.pdf}
 \caption{Representación topológica de la irreversibilidad en el espacio de estados. La convergencia de trayectorias ilustra la pérdida de información, mientras que los nodos sin preimágenes denotan estados Jardín del Edén.}
 \label{fig:jardin_eden}
 \end{figure}

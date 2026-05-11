@@ -1,0 +1,261 @@
+analisis-arquitectura-sistema-simulador.txt
+
+Análisis de la Arquitectura Actual del Sistema Simulador de Autómatas Celulares
+Introducción
+
+A lo largo del desarrollo del simulador de autómatas celulares, la arquitectura interna del proyecto ha evolucionado progresivamente desde una implementación inicialmente monolítica hacia una estructura modular con responsabilidades claramente separadas. Este proceso ha permitido transformar el proyecto de una simple demostración técnica en una base sólida para una herramienta de simulación extensible, capaz de soportar múltiples simulaciones independientes, visualización interactiva y configuración dinámica en tiempo de ejecución.
+
+En la etapa actual, la arquitectura presenta una separación razonablemente clara entre lógica de simulación, representación visual, interfaz gráfica y orquestación global de la aplicación. Esto no solo mejora la mantenibilidad del código, sino que también facilita la incorporación de nuevas funcionalidades sin necesidad de rediseñar completamente el sistema.
+
+El presente análisis describe la estructura arquitectónica actual del simulador, las decisiones de diseño adoptadas, sus ventajas y las áreas identificadas para futuras mejoras.
+
+Arquitectura General del Sistema
+
+La arquitectura actual puede entenderse como un sistema dividido en cuatro capas principales:
+
+Núcleo de simulación
+Control de simulación
+Representación y visualización
+Interfaz gráfica y administración global
+
+Cada una de estas capas posee responsabilidades específicas y relativamente desacopladas.
+
+Núcleo de Simulación
+
+El núcleo de simulación está representado principalmente por la clase Automaton, la cual encapsula los elementos fundamentales necesarios para ejecutar un autómata celular.
+
+Actualmente, Automaton contiene:
+
+La topología (Topology)
+La regla (Rule)
+El almacenamiento de celdas (GridStorage)
+
+Esta decisión permitió centralizar toda la lógica relacionada con la evolución del sistema dentro de una única entidad coherente.
+
+Responsabilidades del Automaton
+
+Entre sus principales funciones se encuentran:
+
+Ejecutar pasos de simulación (step)
+Consultar estados de celdas
+Modificar celdas individuales
+Redimensionar el espacio de simulación
+Cambiar reglas y topologías dinámicamente
+Mantener estadísticas básicas como generación y población viva
+
+La inclusión directa de Rule y Topology dentro del Automaton resolvió varios problemas presentes en iteraciones anteriores, particularmente aquellos relacionados con referencias externas y dificultad para modificar reglas en tiempo de ejecución.
+
+Además, esta estructura simplifica considerablemente la reconstrucción del autómata al cambiar dimensiones o configuraciones globales.
+
+Sistema de Almacenamiento
+
+El almacenamiento interno utiliza la clase GridStorage, la cual abstrae el manejo de buffers de simulación mediante doble almacenamiento (current y next).
+
+Internamente se emplea BitArray para representar el estado binario de las celdas, lo cual reduce significativamente el consumo de memoria comparado con estructuras tradicionales basadas en bool o enteros.
+
+Ventajas del enfoque actual
+
+El uso de doble buffer permite:
+
+Separar lectura y escritura durante la simulación
+Evitar inconsistencias durante el cálculo de generaciones
+Mantener una estructura eficiente y predecible
+
+Asimismo, el uso de BitArray proporciona una base adecuada para futuras optimizaciones SIMD o paralelización.
+
+Sistema de Simulación
+
+La clase Simulation actúa como una capa de control sobre Automaton.
+
+Mientras Automaton representa el sistema celular en sí mismo, Simulation administra aspectos temporales y operacionales, tales como:
+
+Estado de ejecución (running)
+Velocidad de simulación
+Randomización
+Control de actualización temporal
+
+Esta separación representa una mejora importante respecto a versiones previas donde la lógica temporal y la lógica del autómata se encontraban mezcladas.
+
+Beneficios arquitectónicos
+
+La división entre Automaton y Simulation aporta varias ventajas:
+
+Mayor claridad conceptual
+Mejor encapsulamiento
+Posibilidad de reutilizar Automaton en otros contextos
+Facilita futuras implementaciones de simulaciones avanzadas
+
+Sin embargo, identificamos que esta frontera arquitectónica deberá mantenerse cuidadosamente en futuras expansiones para evitar que Simulation evolucione hacia un contenedor excesivamente complejo.
+
+Sistema de Viewports
+
+Uno de los avances arquitectónicos más importantes del proyecto ha sido la introducción de Viewport.
+
+Cada Viewport representa una instancia completamente independiente de simulación y visualización.
+
+Actualmente contiene:
+
+Una instancia de Simulation
+Cámara
+Configuración de renderizado
+Renderer de autómata
+Layout espacial
+Historial de estadísticas
+Manejo contextual de interacción
+Importancia del diseño multi-viewport
+
+Esta estructura permite ejecutar múltiples simulaciones simultáneamente dentro de la misma aplicación, cada una con:
+
+Reglas distintas
+Topologías distintas
+Configuraciones visuales independientes
+Estados temporales propios
+
+Desde una perspectiva arquitectónica, esto aproxima el simulador a un modelo similar al de aplicaciones editoras profesionales basadas en documentos o escenas independientes.
+
+Limitaciones identificadas
+
+A pesar de sus ventajas, Viewport comienza a concentrar múltiples responsabilidades:
+
+Simulación
+Representación
+Configuración visual
+Interacción
+Historial estadístico
+
+Actualmente esto sigue siendo manejable, pero conforme aumenten las herramientas de edición e interacción, será necesario evaluar subdivisiones internas adicionales.
+
+Sistema de Renderizado
+
+La representación visual se encuentra desacoplada mediante la interfaz abstracta AutomatonRenderer.
+
+Actualmente se dispone de implementaciones específicas como HexRenderer, responsables de transformar el estado lógico del autómata en geometría renderizable.
+
+Ventajas del desacoplamiento
+
+Este diseño permite:
+
+Incorporar distintos tipos de renderizadores
+Soportar múltiples layouts espaciales
+Cambiar representaciones visuales sin modificar la simulación
+
+Además, el uso de configuraciones externas (AutomatonRenderConfig) facilita la edición dinámica de apariencia desde la interfaz gráfica.
+
+Sistema de Interfaz Gráfica
+
+La interfaz gráfica se organiza mediante paneles independientes basados en ImGui.
+
+Cada panel posee una responsabilidad concreta:
+
+Simulación
+Estadísticas
+Apariencia
+Gráficas
+Ayuda
+Visualización principal
+Evolución del sistema de paneles
+
+Inicialmente, cada panel era tratado como una ventana aislada. Posteriormente se evolucionó hacia un modelo basado en docking y ventanas contenedoras, permitiendo:
+
+Reorganización dinámica
+Acoplamiento visual flexible
+Interfaz más cercana a herramientas profesionales
+
+El sistema actual utiliza referencias (std::reference_wrapper<Viewport>) para que los paneles operen sobre el viewport activo sin asumir propiedad de los objetos.
+
+Problemas actuales
+
+Aunque funcional, el sistema de paneles aún presenta desafíos relacionados con:
+
+Escalado automático
+Ajuste dinámico del contenido
+Distribución espacial óptima
+Manejo avanzado de layouts
+
+Estas áreas representan uno de los principales objetivos de refinamiento futuro.
+
+Administración Global de la Aplicación
+
+La clase Application funciona como coordinador principal del sistema.
+
+Entre sus responsabilidades se encuentran:
+
+Gestión del ciclo principal
+Procesamiento de eventos
+Administración de viewports
+Cambio de viewport activo
+Sincronización de paneles
+Inicialización de GUI y renderer
+Reducción del acoplamiento
+
+Una mejora importante fue eliminar dependencias innecesarias basadas exclusivamente en eventos y sustituirlas por sincronización explícita de estado cuando era más apropiado.
+
+Esto redujo complejidad accidental y simplificó el flujo general de la aplicación.
+
+Fortalezas de la Arquitectura Actual
+
+Actualmente identificamos las siguientes fortalezas principales:
+
+Modularidad
+
+Las responsabilidades se encuentran considerablemente mejor separadas que en versiones iniciales.
+
+Extensibilidad
+
+La arquitectura permite incorporar:
+
+Nuevas reglas
+Nuevas topologías
+Nuevos renderizadores
+Nuevos paneles
+Nuevos tipos de interacción
+
+sin necesidad de modificar grandes secciones del sistema.
+
+Reconfiguración dinámica
+
+La capacidad de modificar reglas, tamaños y configuraciones visuales en tiempo de ejecución representa uno de los logros más importantes de la arquitectura actual.
+
+Soporte multi-simulación
+
+El modelo basado en múltiples viewports independientes constituye una base sólida para funcionalidades más avanzadas en el futuro.
+
+Mejoras Futuras
+
+Aunque la arquitectura actual resulta funcional y relativamente estable, identificamos varias áreas de mejora.
+
+Refinamiento del Viewport
+
+Será conveniente subdividir responsabilidades internas conforme aumente la complejidad de interacción y herramientas visuales.
+
+Herramientas de edición
+
+Actualmente el manejo de interacción se encuentra directamente dentro del viewport. Futuras versiones podrían introducir sistemas de herramientas desacopladas:
+
+Brush tools
+Selection tools
+Pattern placement
+Inspectores
+Persistencia y serialización
+
+Aún no existe un sistema robusto para guardar y cargar simulaciones completas.
+
+Optimización
+
+El sistema todavía no implementa:
+
+Paralelización
+SIMD
+Chunking espacial
+Renderizado incremental
+Arquitectura ECS o híbrida
+
+En el futuro podría evaluarse una aproximación híbrida para manejar entidades visuales o herramientas avanzadas sin comprometer la simplicidad del núcleo de simulación.
+
+Conclusión
+
+La arquitectura actual del simulador representa un avance considerable respecto a sus primeras iteraciones. El sistema ha evolucionado hacia una estructura modular, extensible y conceptualmente más clara, capaz de soportar múltiples simulaciones independientes y edición dinámica en tiempo de ejecución.
+
+Aunque aún existen áreas susceptibles de refinamiento, particularmente en la organización del Viewport y la interfaz gráfica, la base arquitectónica actual resulta suficientemente sólida para continuar expandiendo el proyecto sin necesidad de rediseños radicales.
+
+En términos generales, consideramos que la arquitectura ha alcanzado un equilibrio adecuado entre flexibilidad, claridad y complejidad, permitiendo priorizar el desarrollo de nuevas funcionalidades sobre la constante reestructuración del backend.

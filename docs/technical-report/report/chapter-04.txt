@@ -63,10 +63,10 @@ La métrica de distancia entre dos celdas $c_1(x_1, y_1, z_1)$ y $c_2(x_2, y_2, 
     \label{eq:distancia_hexagonal}
 \end{equation}
 
-% TODO: Insertar diagrama que muestre la vecindad hexagonal de radio 1 y la disposición de los ejes axiales y cúbicos.
+% Diagrama que muestre la vecindad hexagonal de radio 1 y la disposición de los ejes axiales y cúbicos.
 \begin{figure}[ht]
     \centering
-    % \includegraphics[width=0.6\textwidth]{figuras/vecindad_hexagonal.png}
+    \includegraphics[width=0.8\textwidth]{figures/chapter-04/vecindad_hexagonal.pdf}
     \caption{Representación de la vecindad $\mathcal{N}_H$ y el sistema de coordenadas cúbicas subyacente.}
     \label{fig:vecindad_hexagonal}
 \end{figure}
@@ -105,10 +105,10 @@ Esta relación biyectiva, donde un único hexágono encapsula la información es
 
 Al expandir la unidad fundamental de cómputo a un bloque de $2 \times 2$, el perímetro externo de esta nueva meta-celda expone exactamente 8 segmentos ortogonales. Este incremento en los grados de libertad perimetrales garantiza el isomorfismo geométrico: 6 de las caras del bloque cuadrangular se asignan biyectivamente a las 6 vecindades hexagonales evaluadas por la métrica \eqref{eq:distancia_hexagonal}, asegurando que ninguna trayectoria se superponga prematuramente.
 
-% TODO: Insertar diagrama conceptual del mapeo. Debe mostrar un hexágono abstracto superpuesto transformándose en un bloque de 2x2 cuadrados, ilustrando cómo las 6 aristas del hexágono se asientan sobre el perímetro de los 4 cuadrados.
+% Diagrama conceptual del mapeo. Debe mostrar un hexágono abstracto superpuesto transformándose en un bloque de 2x2 cuadrados, ilustrando cómo las 6 aristas del hexágono se asientan sobre el perímetro de los 4 cuadrados.
 \begin{figure}[ht]
     \centering
-    % \includegraphics[width=0.7\textwidth]{figuras/isomorfismo_2x2.png}
+    \includegraphics[width=\textwidth]{figures/chapter-04/isomorfismo_2x2.pdf}
     \caption{Equivalencia topológica: Mapeo isomórfico suprayectivo entre una celda hexagonal con grado de adyacencia 6 y una partición cuadrangular de $2 \times 2$.}
     \label{fig:isomorfismo_2x2}
 \end{figure}
@@ -189,10 +189,10 @@ Por consiguiente, el cálculo del índice vertical de una celda vecina desplazad
     \label{eq:offset_zigzag}
 \end{equation}
 
-% TODO: Insertar diagrama del desfase axial (Zig-Zag Offset), mostrando una cuadrícula cartesiana donde las columnas impares están visualmente desplazadas hacia abajo en relación a las columnas pares, ilustrando la necesidad de la operación módulo 2.
+% Diagrama del desfase axial (Zig-Zag Offset), mostrando una cuadrícula cartesiana donde las columnas impares están visualmente desplazadas hacia abajo en relación a las columnas pares, ilustrando la necesidad de la operación módulo 2.
 \begin{figure}[ht]
     \centering
-    % \includegraphics[width=0.75\textwidth]{figuras/zigzag_offset.png}
+    \includegraphics[width=0.8\textwidth]{figures/chapter-04/zigzag_offset.pdf}
     \caption{Representación gráfica de la discontinuidad espacial en un mapeo de coordenadas \textit{zig-zag}. Se denota el desfase provocado por la paridad de la columna.}
     \label{fig:zigzag_offset}
 \end{figure}
@@ -240,10 +240,10 @@ Para que la deformación geométrica no induzca errores en la cinemática de col
     \label{eq:mapeo_direccional}
 \end{equation}
 
-% TODO: Insertar diagrama del bloque de memoria 2x2. El esquema debe mostrar cómo las aristas del bloque de cuadrados se enlazan explícitamente con los seis vectores direccionales (E, NE, NW, W, SW, SE), ilustrando que dos de las ocho aristas del bloque permanecen inactivas para preservar la simetría de interacción hexagonal.
-\begin{figure}[ht]
+% Diagrama del bloque de memoria 2x2. El esquema debe mostrar cómo las aristas del bloque de cuadrados se enlazan explícitamente con los seis vectores direccionales (E, NE, NW, W, SW, SE), ilustrando que dos de las ocho aristas del bloque permanecen inactivas para preservar la simetría de interacción hexagonal.
+\begin{figure}[b]
     \centering
-    % \includegraphics[width=0.7\textwidth]{figuras/tensor_vecindad_2x2.png}
+    \includegraphics[width=0.7\textwidth]{figures/chapter-04/tensor_vecindad_2x2.pdf}
     \caption{Distribución de los seis ejes direccionales de interacción sobre el perímetro expuesto de la subred funcional de adyacencia $\mathcal{T}_B$.}
     \label{fig:tensor_vecindad_2x2}
 \end{figure}
@@ -251,3 +251,72 @@ Para que la deformación geométrica no induzca errores en la cinemática de col
 Es posible observar que, de las 8 caras disponibles en el bloque ortogonal, exactamente 2 permanecen en un estado topológicamente inactivo (o degenerado). Esta redundancia geométrica controlada es el sustento axiomático que garantiza que ninguna trayectoria de propagación (v.g., el frente de onda de un \textit{glider}) interactúe erróneamente ni pierda simetría traslacional por la cuadratura de la red subyacente. 
 
 Consecuentemente, el modelo algebraico asegura que cualquier estructura de información sujeta a la métrica de Manhattan hexagonal evaluada en \eqref{eq:distancia_hexagonal} podrá navegar el arreglo de memoria con una consistencia espacial y algorítmica impecable, validando de forma rigurosa la base para las leyes de aniquilación y conservación de estados que se abordarán en capítulos posteriores.
+
+
+\section{Teoremas de invariancia dinámica y preservación de la computabilidad}
+\label{sec:teoremas_invariancia}
+
+Después de establecer cómo se transforma el espacio (Sección \ref{sec:transformacion_afin}) y cómo se ajustan las vecindades (Sección \ref{sec:mapeo_vecindades}), es fundamental demostrar que el comportamiento del autómata celular sigue siendo el mismo. En esta sección se presenta la justificación matemática que asegura que, aunque la geometría cambie de hexágonos a cuadrados, las reglas lógicas y la evolución del sistema no se ven alteradas. Esto garantiza que cualquier cálculo o fenómeno observado en el modelo original se mantiene en el modelo transformado.
+
+\subsection{Invarianza de la función de transición local $\delta$ bajo isomorfismos de red}
+\label{subsec:invarianza_funcion_transicion}
+
+La evolución de un autómata celular depende de su función de transición local $\delta$. Para el caso hexagonal, esta función se define como $\delta_H: Q^6 \to Q$, donde el estado de una celda en el tiempo $t+1$ depende de ella misma y de sus 6 vecinos. Al pasar a una red de celdas cuadradas, la vecindad cambia a un bloque de $2 \times 2$ con 8 puntos de contacto potenciales hacia el exterior. 
+
+Para que el sistema sea equivalente, la nueva función $\delta_Q$ debe procesar la información de tal manera que los cambios en la geometría no agreguen información falsa ni modifiquen la regla original.
+
+\textbf{Lema 4.1 (Equivalencia de la regla local).} \textit{La evaluación de la regla de transición en la cuadrícula de $2 \times 2$ es equivalente a la de la celda hexagonal si los estados de las celdas adicionales en la vecindad cuadrada se mantienen como elementos neutros.}
+
+\textit{Demostración.} Sea $V_H$ el conjunto de estados de los 6 vecinos en la red hexagonal. Al realizar el mapeo hacia el bloque de 4 celdas cuadradas, se generan 8 interfaces de comunicación. De acuerdo con el mapeo direccional establecido en \eqref{eq:mapeo_direccional} % TODO: Verificar etiqueta en 4.4
+, existen 2 direcciones que no tienen correspondencia directa con la topología hexagonal original.
+
+Si definimos un estado de identidad o "vacío" $\epsilon$, que no afecta la lógica de colisión (como se describe en \cite{Basurto2009}), el vector de estados en la nueva red $V_Q$ se puede expresar como:
+\begin{equation}
+V_Q = V_H + \{ \epsilon_1, \epsilon_2 \}
+\label{eq:vector_extendido}
+\end{equation}
+
+Al aplicar la función de transición en el dominio cuadrado, el resultado debe ser igual al del dominio hexagonal:
+\begin{equation}
+\delta_Q(V_Q) = \delta_H(V_H)
+\label{eq:igualdad_delta}
+\end{equation}
+
+Esto demuestra que el aumento de celdas por el cambio de geometría no altera el resultado del cómputo local, siempre que la función ignore las direcciones excedentes. $\blacksquare$
+
+\subsection{Teorema de equivalencia computacional y conservación del espacio de fases}
+\label{subsec:teorema_equivalencia_computacional}
+
+Una vez demostrado que la regla local funciona igual, es necesario probar que el sistema completo evoluciona correctamente a través del tiempo. Se debe asegurar que las estructuras complejas, como los \textit{gliders} o las naves espaciales, se desplacen y colisionen en la red cuadrada de la misma forma que en la hexagonal.
+
+Para esto, definimos $\Phi$ como la función que transforma una configuración completa de hexágonos a cuadrados. Sea $F_H$ la evolución del sistema en hexágonos y $F_Q$ la evolución en cuadrados.
+
+\textbf{Teorema 4.2 (Conservación de la dinámica global).} \textit{Para cualquier estado inicial del autómata, el resultado de evolucionar el sistema y luego transformarlo es el mismo que si primero se transforma y luego se evoluciona.}
+
+\begin{equation}
+\Phi(F_H(c)) = F_Q(\Phi(c))
+\label{eq:conmutatividad}
+\end{equation}
+
+\textit{Demostración por inducción.}
+\begin{enumerate}
+    \item \textbf{Base ($t=0$):} En el tiempo inicial, la equivalencia es directa por la definición de la transformación $\Phi$ explicada en la Sección \ref{sec:transformacion_afin}.
+    \item \textbf{Hipótesis inductiva:} Supongamos que en el tiempo $k$ el estado es equivalente: $\Phi(c_H^k) = c_Q^k$.
+    \item \textbf{Paso inductivo:} Para el tiempo $k+1$, el estado en la red hexagonal es $c_H^{k+1} = F_H(c_H^k)$. Aplicando la transformación obtenemos $\Phi(F_H(c_H^k))$.
+    
+    Por el Lema 4.1, sabemos que la aplicación de la regla es localmente idéntica en ambos dominios. Dado que la actualización de las celdas es simultánea en toda la red, la transformación de la evolución global se reduce a la suma de las evoluciones locales ya comprobadas. Por lo tanto:
+    \begin{equation}
+    \Phi(F_H(c_H^k)) = F_Q(\Phi(c_H^k)) = F_Q(c_Q^k)
+    \end{equation}
+\end{enumerate}
+Esto confirma que la trayectoria del sistema en el espacio de fases se mantiene idéntica. $\blacksquare$
+
+% Diagrama conmutativo que muestre que el camino de (Malla H -> Evolución -> Malla Q) es igual a (Malla H -> Malla Q -> Evolución).
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/chapter-04/diagrama_conmutativo.pdf}
+    \caption{Representación visual del isomorfismo entre la evolución temporal y la transformación espacial.}
+    \label{fig:diagrama_conmutativo}
+\end{figure}
+
+Con estos teoremas queda demostrado que el simulador desarrollado en C++ sobre una malla ortogonal es una representación fiel y exacta del modelo teórico hexagonal. Las métricas de entropía y los resultados de las compuertas lógicas que se analizarán en los siguientes capítulos poseen, por lo tanto, plena validez científica.

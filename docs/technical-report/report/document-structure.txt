@@ -26,18 +26,25 @@ Capítulo 4: Isomorfismos y Transformaciones Topológicas entre Espacios Celular
 	• Preservación de la computabilidad: Teoremas de equivalencia y conservación de la dinámica bajo transformaciones de red.
 PARTE III: FENÓMENOS EMERGENTES Y LÓGICA DE COLISIONES
 Esta es la médula analítica de tu Trabajo Terminal. Se estudia el comportamiento de la información viajando a través de la topología definida.
-Capítulo 5: Dinámica de Partículas y Computación por Interacciones Locales
-	• Definición formal de propagación de información: Estructuras móviles (gliders), periodos y vectores de traslación.
-	• Álgebra de colisiones y conservación de estados: Reglas de aniquilación, creación y reflexión de estructuras.
-	• Análisis riguroso de reglas de transición no triviales: Estudio de caso para la emergencia computacional (Análisis algebraico de las dinámicas Spiral y Beehive).
-	• Síntesis de compuertas lógicas universales: Construcción matemática de operadores booleanos mediante topología de colisiones.
-Capítulo 6: Análisis de Complejidad y Comprobación del Modelo Teórico
+Capítulo 5: Dinámica de partículas y computación por interacciones locales
+	• Fundamentos algorítmicos y fenomenología: Caracterización matemática de subconfiguraciones móviles (gliders) y diseño de algoritmos de rastreo espacial en retículas discretas.
+	• Mecánica algorítmica de la dinámica Spiral: Formalización de las transiciones expansivas y optimización computacional para el cálculo de la cinemática de propagación.
+	• Topología de atractores en la dinámica Beehive: Análisis riguroso de osciladores y evaluación algorítmica predictiva para el manejo de aglomeraciones densas y ciclos límite.
+	• Síntesis algorítmica de compuertas universales: Diseño de un algoritmo heurístico original para la sincronización espaciotemporal de colisiones, validando el isomorfismo con operadores booleanos y estableciendo sus cotas de complejidad matemática.
+Capítulo 6: Estructuración Lógica y Arquitectura Computacional del Motor de Simulación
+	• Especificación axiomática de requerimientos: Definición rigurosa de los requerimientos funcionales (capacidades de edición, ejecución y evaluación) y no funcionales (desempeño, escalabilidad y restricciones computacionales) que rigen el diseño del sistema.
+	• Modelado topológico y diagrama arquitectónico: Representación esquemática del sistema mediante un diagrama de arquitectura general, ilustrando el flujo de información y la separación modular en cuatro capas de abstracción fundamentales.
+	• Núcleo algebraico de simulación: Formalización de la capa base encargada del procesamiento matemático puro; diseño de las estructuras de datos bidimensionales y ejecución aislada de las funciones de transición locales (reglas del autómata).
+	• Control dinámico y gestión del tiempo discreto: Análisis del subsistema de control responsable de la orquestación temporal de la simulación, la iteración por pasos (ticks), el manejo de pausas y el restablecimiento del espacio de estados.
+	• Mapeo geométrico y representación visual: Estructuración de la capa de visualización (Viewport) que traduce el estado matricial de las celdas en representaciones gráficas continuas, manteniendo un desacoplamiento estricto respecto a la lógica matemática.
+	• Interfaz de interacción y administración global: Diseño del gestor central de la aplicación (Application Manager), responsable de coordinar la entrada del usuario, la edición dinámica de configuraciones iniciales en tiempo de ejecución y la intercomunicación no obstructiva entre todos los módulos.
+Capítulo 7: Análisis de Complejidad y Comprobación del Modelo Teórico
 	• Métricas de entropía y complejidad espacio-temporal: Evaluación del estado de la red durante la evolución.
 	• Análisis asintótico de las estructuras emergentes: Tiempos de estabilización y ciclos límite en conjuntos de configuraciones iniciales.
 	• Validación del isomorfismo teórico: Contrastación del modelo transformado frente al modelo original de reacción de partículas hexagonales.
 PARTE IV: COROLARIOS, AXIOMATIZACIÓN FINAL Y HORIZONTES DE INVESTIGACIÓN
 El cierre académico, donde se demuestra el grado de comprensión sistémica alcanzado.
-Capítulo 7: Síntesis Analítica y Perspectivas Teóricas
+Capítulo 8: Síntesis Analítica y Perspectivas Teóricas
 	• Demostración empírico-matemática de las hipótesis: Validación de la computabilidad en los modelos desarrollados.
 	• Límites de la transformación topológica: Discusión sobre la sobrecarga computacional ("overhead") al mapear hexágonos mediante vecindades cuadradas extendidas.
 	• Implicaciones en la computación natural y no convencional: Aportes al modelado de fenómenos físicos discretos.

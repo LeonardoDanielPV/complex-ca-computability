@@ -79,7 +79,7 @@ Es posible observar que, para una retícula cuadrada convencional, una vecindad 
 % TODO: Insertar figura que compare gráficamente las vecindades de radio 1 bajo las métricas L1, L2 y Linf en una retícula cuadrada.
 \begin{figure}[htbp]
     \centering
-    % \includegraphics[width=0.7\textwidth]{metricas_vecindad}
+    \includegraphics[width=\textwidth]{figures/chapter-03/metricas_vecindad.pdf}
     \caption{Representación geométrica de las vecindades inducidas por distintas métricas en $\mathbb{Z}^2$. Se observa cómo la elección de la distancia determina la morfología de la interacción local.}
     \label{fig:metricas_vecindad}
 \end{figure}
@@ -106,12 +106,11 @@ Es posible derivar la relación entre el circunradio $R$ y la \textit{apotema} (
     a = R \cos\left( \frac{\pi}{6} \right) = \frac{\sqrt{3}}{2}R
 \end{equation}
 
-Esta constante geométrica es fundamental para el algoritmo de renderizado, pues define el factor de escala en el eje de las abscisas al realizar el empaquetamiento de la red.
+Esta constante geométrica es fundamental para el algoritmo de renderizado, pues define el factor de escala en el eje de las abscisas al realizar el empaquetamiento de la red, vease Fig. \ref{fig:geometria_celda}.
 
-% TODO: Insertar diagrama del hexágono regular centrado en el origen indicando R, a, y los ángulos de deflexión de los vértices.
-\begin{figure}[htbp]
+\begin{figure}[h]
     \centering
-    % \includegraphics[width=0.4\textwidth]{geometria_celda}
+    \includegraphics[width=0.9\textwidth]{figures/chapter-03/geometria_celda.pdf}
     \caption{Geometría analítica de la tesela hexagonal unitaria. Se destacan las relaciones trigonométricas entre el circunradio y la apotema.}
     \label{fig:geometria_celda}
 \end{figure}
@@ -136,10 +135,9 @@ Este modelo algebraico constituye la base analítica para el \textit{mapeo inver
 
 Resulta de interés observar que este planteamiento no depende de una búsqueda iterativa, sino de una evaluación directa de la norma del vector de posición, lo cual optimiza la complejidad temporal del simulador a tiempo constante $\mathcal{O}(1)$ por cada consulta de pertenencia.
 
-% TODO: Insertar gráfica de las funciones de nivel que definen las inecuaciones del dominio hexagonal.
 \begin{figure}[htbp]
     \centering
-    % \includegraphics[width=0.6\textwidth]{interseccion_planos}
+    \includegraphics[width=0.6\textwidth]{figures/chapter-03/interseccion_planos.pdf}
     \caption{Representación del dominio $\mathcal{H}$ como intersección de semiplanos. Las regiones sombreadas indican el cumplimiento de las restricciones lineales.}
     \label{fig:interseccion_planos}
 \end{figure}
@@ -190,10 +188,9 @@ Este sistema de ecuaciones revela las propiedades de empaquetamiento de la red. 
 
 Cabe destacar que, mediante rotaciones afines, es posible derivar el modelo complementario de columnas compensadas (\textit{even-q} u \textit{odd-q}) para hexágonos con orientación de borde plano (\textit{flat-top}), aunque para los fines de este Trabajo Terminal, la axiomatización se centra en la simetría horizontal dictada por el sistema \textit{odd-r}.
 
-% TODO: Insertar un diagrama visual que muestre el mapeo de una matriz de memoria 2D ortogonal hacia una cuadrícula hexagonal bajo el sistema odd-r, destacando el desplazamiento (offset) en las filas impares.
 \begin{figure}[htbp]
     \centering
-    % \includegraphics[width=0.8\textwidth]{mapeo_compensado_oddr}
+    \includegraphics[width=\textwidth]{figures/chapter-03/mapeo_compensado_oddr.pdf}
     \caption{Modelado geométrico del sistema de coordenadas compensadas \textit{odd-r}. Se ilustra cómo la paridad de la fila $j$ determina la traslación sobre el eje de las abscisas, emulando un empaquetamiento óptimo continuo a partir de índices discretos.}
     \label{fig:mapeo_compensado_oddr}
 \end{figure}
@@ -223,10 +220,9 @@ Bajo esta relación, la clausura topológica de la matriz de estados finita se d
 
 Este espacio cociente $\mathbb{T}^2$ es isomorfo a un toroide bidimensional discreto. Geométricamente, esta operación equivale a identificar el borde derecho de la matriz con el borde izquierdo (formando un cilindro), y posteriormente unir el borde superior con el inferior. La consecuencia axiomática fundamental de este mapeo es que toda celda en $\mathbb{T}^2$, sin excepción, posee una vecindad completa y simétrica. El espacio carece de fronteras, garantizando la invarianza por traslación de la función de transición global en la totalidad del dominio simulado.
 
-% TODO: Insertar diagrama topológico que ilustre el pegado de las aristas opuestas de un plano rectangular para formar un toroide, señalando la continuidad de una vecindad hexagonal a través de la frontera (costura).
 \begin{figure}[htbp]
     \centering
-    % \includegraphics[width=0.6\textwidth]{espacio_toroidal}
+    \includegraphics[width=\textwidth]{figures/chapter-03/espacio_toroidal.pdf}
     \caption{Representación del espacio cociente $\mathbb{T}^2$. Las fronteras opuestas se identifican algebraicamente para construir una topología continua libre de condiciones de borde.}
     \label{fig:espacio_toroidal}
 \end{figure}
@@ -279,10 +275,9 @@ Al redondear matemáticamente $(q_f, r_f, s_f)$ al entero más cercano y ajustar
 
 Este modelo algebraico inverso elimina por completo la necesidad de emplear algoritmos de búsqueda iterativa o iteraciones exhaustivas sobre el espacio de estados. La localización geométrica de cualquier perturbación externa se procesa en tiempo constante, sirviendo de fundamento matemático robusto para el motor gráfico en C/C++ \cite{Basurto2009}.
 
-% TODO: Insertar diagrama conceptual del mapeo inverso. Se sugiere mostrar un vector (x,y) apuntando a una región interna de un hexágono y los pasos de transformación a través del plano axial hasta el índice (i,j).
 \begin{figure}[htbp]
     \centering
-    % \includegraphics[width=0.7\textwidth]{mapeo_inverso}
+    \includegraphics[width=\textwidth]{figures/chapter-03/mapeo_inverso.pdf}
     \caption{Esquematización del mapeo algebraico inverso. La transición del dominio continuo de pantalla hacia el arreglo de memoria discreto.}
     \label{fig:mapeo_inverso}
 \end{figure}
