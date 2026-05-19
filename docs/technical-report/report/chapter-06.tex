@@ -78,6 +78,93 @@ Los requerimientos funcionales definen las capacidades operativas esenciales que
 \label{tab:rf04}
 \end{table}
 
+% RF-05
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-05} \\ \hline
+\textbf{Nombre:} & Ejecución discreta paso a paso \\ \hline
+\textbf{Descripción:} & El motor debe permitir avanzar la simulación generación por generación, posibilitando el análisis detallado de transiciones locales y colisiones complejas. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para el análisis temporal discreto.}
+\label{tab:rf05}
+\end{table}
+
+% RF-06
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-06} \\ \hline
+\textbf{Nombre:} & Control temporal de simulación \\ \hline
+\textbf{Descripción:} & El sistema debe permitir pausar, reanudar y reiniciar la evolución del autómata celular en cualquier instante temporal. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para el control de ejecución.}
+\label{tab:rf06}
+\end{table}
+
+% RF-07
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-07} \\ \hline
+\textbf{Nombre:} & Persistencia de configuraciones \\ \hline
+\textbf{Descripción:} & El sistema debe permitir almacenar configuraciones iniciales y estados evolutivos en archivos persistentes para su posterior reutilización. \\ \hline
+\textbf{Prioridad:} & Media \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para persistencia de configuraciones.}
+\label{tab:rf07}
+\end{table}
+
+% RF-08
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-08} \\ \hline
+\textbf{Nombre:} & Carga de configuraciones experimentales \\ \hline
+\textbf{Descripción:} & El sistema debe permitir importar configuraciones previamente almacenadas, preservando la topología, regla y distribución espacial original. \\ \hline
+\textbf{Prioridad:} & Media \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para recuperación experimental.}
+\label{tab:rf08}
+\end{table}
+
+% RF-09
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-09} \\ \hline
+\textbf{Nombre:} & Visualización dinámica de trayectorias \\ \hline
+\textbf{Descripción:} & El motor debe representar gráficamente la trayectoria espacial de estructuras móviles emergentes durante la evolución temporal. \\ \hline
+\textbf{Prioridad:} & Media \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para seguimiento de estructuras móviles.}
+\label{tab:rf09}
+\end{table}
+
+% RF-10
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RF-10} \\ \hline
+\textbf{Nombre:} & Detección de estructuras periódicas \\ \hline
+\textbf{Descripción:} & El sistema debe identificar automáticamente configuraciones estacionarias, osciladores y ciclos límite presentes dentro del espacio celular. \\ \hline
+\textbf{Prioridad:} & Media \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento funcional para detección de periodicidad.}
+\label{tab:rf10}
+\end{table}
+
+\FloatBarrier
+
+
 \subsection{Restricciones y atributos de calidad (Requerimientos no funcionales)}
 
 Los requerimientos no funcionales establecen los límites de eficiencia y mantenibilidad bajo los cuales debe operar el artefacto. Estos criterios aseguran que el análisis asintótico de memoria $S(n) = \mathcal{O}(n)$ presentado en el Capítulo \ref{cap:geometria_computacional} se cumpla en la implementación física.
@@ -123,6 +210,37 @@ Los requerimientos no funcionales establecen los límites de eficiencia y manten
 \caption{Especificación del requerimiento no funcional para la integridad lógica.}
 \label{tab:rnf03}
 \end{table}
+
+% RNF-04
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RNF-04} \\ \hline
+\textbf{Nombre:} & Escalabilidad espacial \\ \hline
+\textbf{Descripción:} & El sistema debe soportar retículas de gran tamaño (1000 x 1000) sin degradación crítica del rendimiento computacional. \\ \hline
+\textbf{Prioridad:} & Alta \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento no funcional para escalabilidad espacial.}
+\label{tab:rnf04}
+\end{table}
+
+% RNF-05
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{ID:} & \textbf{RNF-05} \\ \hline
+\textbf{Nombre:} & Consistencia matemática \\ \hline
+\textbf{Descripción:} & La implementación computacional debe preservar estrictamente las definiciones formales y reglas de transición establecidas teóricamente. \\ \hline
+\textbf{Prioridad:} & Crítica \\ \hline
+\end{tabular}
+\caption{Especificación del requerimiento no funcional para consistencia formal.}
+\label{tab:rnf05}
+\end{table}
+
+\FloatBarrier
+
 
 % Diagrama de bloques que ilustre la jerarquía de requerimientos y su relación con el ciclo de vida de la simulación.
 \begin{figure}[ht]
