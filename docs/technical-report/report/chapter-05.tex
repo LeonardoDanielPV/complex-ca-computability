@@ -20,8 +20,7 @@ La evaluación de la computabilidad dentro de un autómata celular complejo requ
 \subsection{Definición conjuntista y caracterización algebraica de \textit{gliders}}
 \label{subsec:caracterizacion_gliders}
 
-Para caracterizar matemáticamente una subconfiguración móvil, es necesario abstraerla del estado global de la retícula. Sea $Q$ el alfabeto finito de estados y $\mathcal{S} = Q^{\mathbb{Z}^2}$ el espacio de configuraciones global introducido en el Capítulo 2 (ver ecuación \eqref{eq:espacio_configuraciones} % TODO: Verificar etiqueta del Capítulo 2
-). Una subconfiguración $c$ se define como la restricción del espacio de estados a un subconjunto finito de coordenadas $D \subset \mathbb{Z}^2$. 
+Para caracterizar matemáticamente una subconfiguración móvil, es necesario abstraerla del estado global de la retícula. Sea $Q$ el alfabeto finito de estados y $\mathcal{S} = Q^{\mathbb{Z}^2}$ el espacio de configuraciones global introducido en la Sección \ref{sec:funciones_transicion}. Una subconfiguración $c$ se define como la restricción del espacio de estados a un subconjunto finito de coordenadas $D \subset \mathbb{Z}^2$. 
 
 Se define formalmente a un \textit{glider} como una subconfiguración finita $G$ que, tras un número discreto y determinado de aplicaciones de la función de transición global $\Delta$, reaparece isomorfamente en la retícula, pero trasladada por un vector espacial específico. 
 
@@ -199,8 +198,7 @@ Topológicamente, esto implica que las trayectorias en el espacio de configuraci
 \label{eq:oscilador_periodo}
 \end{equation}
 
-Donde $\Delta$ es la función de transición global definida en el Capítulo 2 (ver ecuación \eqref{eq:transicion_global} % TODO: Verificar etiqueta del Capítulo 2
-). Cuando $p = 1$, la estructura se denomina configuración estable (o bloque). La caracterización de estos osciladores resulta crítica para el diseño computacional, dado que actúan como memorias estáticas o cables aislantes capaces de contener y dirigir las colisiones de las partículas evaluadas en la Sección 5.1.
+Donde $\Delta$ es la función de transición global definida en el Capítulo 2 (ver Sección \ref{sec:funciones_transicion}). Cuando $p = 1$, la estructura se denomina configuración estable (o bloque). La caracterización de estos osciladores resulta crítica para el diseño computacional, dado que actúan como memorias estáticas o cables aislantes capaces de contener y dirigir las colisiones de las partículas evaluadas en la Sección 5.1.
 
 \subsection{Algoritmos de resolución para aglomeraciones densas y predicción de auto-organización}
 \label{subsec:algoritmo_beehive_particionado}
@@ -261,7 +259,7 @@ El comportamiento resultante de la colisión es isomorfo al de las compuertas l�
 
 \begin{itemize}
     \item \textbf{Compuerta AND:} Se diseña estableciendo dos trayectorias incidentes. La colisión destructiva se parametriza de modo que, únicamente cuando ambas partículas convergen (entradas $1, 1$), los fragmentos de la aniquilación interaccionan para emitir un tercer \textit{glider} en una trayectoria de salida (salida $1$). Si solo una partícula ingresa, esta pasa inalterada hacia un sumidero, resultando en un $0$ lógico en la vía de salida deseada.
-    \item \textbf{Compuerta NOT:} Se sintetiza explotando la irreversibilidad del sistema analizada en el Capítulo 2 (ver figura \ref{fig:jardin_del_eden}). % TODO: Verificar etiqueta del diagrama de estados Jardín del Edén en el capítulo 2. 
+    \item \textbf{Compuerta NOT:} Se sintetiza explotando la irreversibilidad del sistema analizada en el Capítulo 2 (ver figura \ref{fig:jardin_eden}).
     Se establece un cañón emisor continuo (una señal $1$ constante). La entrada lógica actúa como un \textit{glider} interceptor. Si la entrada es $1$, colisiona y destruye la señal constante, resultando en una salida $0$. Si la entrada es $0$ (ausencia), la señal constante prosigue su curso, registrando un $1$.
 \end{itemize}
 

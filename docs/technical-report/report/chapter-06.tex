@@ -7,9 +7,9 @@
 \chapter{Estructuración lógica y arquitectura computacional del motor de simulación}
 \label{cap:arquitectura_software}
 
-\abstract*{Este capítulo formaliza la arquitectura de software desarrollada para la experimentación con autómatas celulares complejos. Se detallan las capas de abstracción empleadas para aislar la lógica matemática de la representación visual, estableciendo un marco robusto y extensible. A partir de los fundamentos establecidos en los Capítulos \ref{cap:geometria_computacional} y \ref{cap:isomorfismos}, se describe la transición del modelo analítico hacia un artefacto computacional funcional, garantizando que la implementación en C/C++ preserve las propiedades de computabilidad y los isomorfismos topológicos demostrados previamente.}
+\abstract*{Este capítulo formaliza la arquitectura de software desarrollada para la experimentación con autómatas celulares complejos. Se detallan las capas de abstracción empleadas para aislar la lógica matemática de la representación visual, estableciendo un marco robusto y extensible. A partir de los fundamentos establecidos en los Capítulos \ref{cap:geometria_computacional} y \ref{chap:isomorfismos}, se describe la transición del modelo analítico hacia un artefacto computacional funcional, garantizando que la implementación en C/C++ preserve las propiedades de computabilidad y los isomorfismos topológicos demostrados previamente.}
 
-\abstract{Este capítulo formaliza la arquitectura de software desarrollada para la experimentación con autómatas celulares complejos. Se detallan las capas de abstracción empleadas para aislar la lógica matemática de la representación visual, estableciendo un marco robusto y extensible. \newline\indent A partir de los fundamentos establecidos en los Capítulos \ref{cap:geometria_computacional} y \ref{cap:isomorfismos}, se describe la transición del modelo analítico hacia un artefacto computacional funcional, garantizando que la implementación en C/C++ preserve las propiedades de computabilidad y los isomorfismos topológicos demostrados previamente.}
+\abstract{Este capítulo formaliza la arquitectura de software desarrollada para la experimentación con autómatas celulares complejos. Se detallan las capas de abstracción empleadas para aislar la lógica matemática de la representación visual, estableciendo un marco robusto y extensible. \newline\indent A partir de los fundamentos establecidos en los Capítulos \ref{cap:geometria_computacional} y \ref{chap:isomorfismos}, se describe la transición del modelo analítico hacia un artefacto computacional funcional, garantizando que la implementación en C/C++ preserve las propiedades de computabilidad y los isomorfismos topológicos demostrados previamente.}
 
 \section{Especificación formal de requerimientos del sistema}
 \label{sec:requerimientos}
@@ -141,7 +141,7 @@ Como se observa en las tablas anteriores, la prioridad crítica recae en la pres
 
 Una vez establecidos los requerimientos funcionales y las restricciones de calidad en la Sección \ref{sec:requerimientos}, es imperativo definir la estructura macroscópica que permite al artefacto computacional operar bajo tales parámetros. El diseño del simulador se fundamenta en un modelo de arquitectura estratificada o en capas, el cual garantiza un desacoplamiento estricto entre la lógica matemática del autómata celular y los mecanismos de interacción y renderizado.
 
-Esta estratificación es fundamental para preservar la integridad de la función de transición $\delta$, definida formalmente en el Capítulo \ref{cap:teoria_formal}. Al aislar el núcleo de simulación, se asegura que las optimizaciones espaciales de complejidad $S(n) = \mathcal{O}(n)$ discutidas en la Sección \ref{sec:analisis_complejidad_mapeo} no se vean comprometidas por la sobrecarga del procesamiento de eventos de usuario o la latencia del subsistema gráfico.
+Esta estratificación es fundamental para preservar la integridad de la función de transición $\delta$, definida formalmente en el Capítulo \ref{cap:teoria_formal}. Al aislar el núcleo de simulación, se asegura que las optimizaciones espaciales de complejidad $S(n) = \mathcal{O}(n)$ discutidas en la Sección \ref{sec:complejidad_renderizado} no se vean comprometidas por la sobrecarga del procesamiento de eventos de usuario o la latencia del subsistema gráfico.
 
 \subsection{Diagrama de la arquitectura del sistema}
 
@@ -166,7 +166,7 @@ A continuación, se describen conceptualmente las cuatro divisiones fundamentale
     
     \item \textbf{Control de Simulación (Simulation Control):} Esta capa actúa como un mediador entre el estado estático del autómata y su evolución dinámica. Gestiona el dominio temporal, controlando la velocidad de ejecución (pasos por segundo) y la sincronización de los hilos de procesamiento en caso de existir concurrencia. Es la encargada de invocar el cálculo de la nueva generación basándose en los parámetros de la regla activa (e.g., \textit{Spiral}).
     
-    \item \textbf{Representación y Visualización (Viewport System):} Se encarga de la traducción de los estados binarios almacenados en el núcleo hacia entidades geométricas renderizables. Implementa los isomorfismos espaciales demostrados en el Capítulo \ref{cap:isomorfismos}, transformando la lógica hexagonal en una representación visual coherente para el usuario. Esta capa es independiente de la simulación; es decir, el renderizado puede pausarse o modificarse sin alterar la evolución del sistema dinámico subyacente.
+    \item \textbf{Representación y Visualización (Viewport System):} Se encarga de la traducción de los estados binarios almacenados en el núcleo hacia entidades geométricas renderizables. Implementa los isomorfismos espaciales demostrados en el Capítulo \ref{chap:isomorfismos}, transformando la lógica hexagonal en una representación visual coherente para el usuario. Esta capa es independiente de la simulación; es decir, el renderizado puede pausarse o modificarse sin alterar la evolución del sistema dinámico subyacente.
     
     \item \textbf{Interfaz Gráfica y Administración Global (Application Layer):} Es el estrato de más alto nivel que coordina la aplicación en su totalidad. Gestiona el ciclo principal (\textit{main loop}), la captura de eventos del teclado y ratón, y la administración de los paneles de configuración. Su función principal es la orquestación de los distintos \textit{Viewports}, permitiendo la reconfiguración dinámica de las reglas en tiempo de ejecución (RF-02) mediante una interfaz no obstructiva.
 \end{enumerate}
@@ -178,7 +178,7 @@ Esta separación de responsabilidades no solo satisface los criterios de ingenie
 \section{Núcleo de simulación: Lógica fundamental y representación de estados}
 \label{sec:nucleo_simulacion}
 
-Una vez establecida la topología por capas en la Sección \ref{sec:topologia_arquitectonica}, es necesario profundizar en el diseño del \textit{Simulation Core}. Este componente constituye la realización física del modelo matemático definido en la Sección \ref{sec:fundamentacion_conjuntista}, donde el autómata celular se concibe como una cuádrupla $(\mathcal{L}, S, N, \delta)$. La arquitectura del núcleo se centra en encapsular esta definición dentro de estructuras de datos que optimicen tanto el tiempo de acceso como el consumo de memoria, permitiendo la experimentación con las reglas complejas analizadas en el Capítulo \ref{cap:dinamica_particulas}.
+Una vez establecida la topología por capas en la Sección \ref{sec:topologia_arquitectonica}, es necesario profundizar en el diseño del \textit{Simulation Core}. Este componente constituye la realización física del modelo matemático definido en la Sección \ref{sec:fundamentacion}, donde el autómata celular se concibe como una cuádrupla $(\mathcal{L}, S, N, \delta)$. La arquitectura del núcleo se centra en encapsular esta definición dentro de estructuras de datos que optimicen tanto el tiempo de acceso como el consumo de memoria, permitiendo la experimentación con las reglas complejas analizadas en el Capítulo \ref{cap:dinamica_particulas}.
 
 \subsection{Encapsulamiento del sistema dinámico}
 
@@ -186,15 +186,15 @@ La entidad central del motor es la clase \texttt{Automaton}. Su función es inte
 
 \begin{itemize}
     \item \textbf{La Regla de Evolución ($\delta$):} Encapsulada mediante un objeto de tipo \texttt{Rule}, el cual define la lógica de transición específica (e.g., \textit{Spiral} o \textit{Beehive}) sin alterar el resto del motor.
-    \item \textbf{La Topología del Espacio ($N$):} Define la métrica de vecindad. En este proyecto, se implementa el mapeo submatricial de $2 \times 2$ demostrado en la Sección \ref{sec:mapeo_submatricial}, permitiendo que una red ortogonal se comporte isomorfamente como una hexagonal.
+    \item \textbf{La Topología del Espacio ($N$):} Define la métrica de vecindad. En este proyecto, se implementa el mapeo submatricial de $2 \times 2$ demostrado en la Sección \ref{subsec:correspondencia_submatricial}, permitiendo que una red ortogonal se comporte isomorfamente como una hexagonal.
     \item \textbf{El Almacenamiento Espacial ($\mathcal{L}$):} Gestionado por la clase \texttt{GridStorage}, la cual administra la memoria física de las celdas.
 \end{itemize}
 
-Esta centralización simplifica la reconstrucción del autómata ante cambios de configuración. Al modificar parámetros como el tamaño de la malla o la regla de transición, la clase \texttt{Automaton} garantiza que los isomorfismos establecidos en el Capítulo \ref{cap:isomorfismos} se mantengan consistentes, evitando estados inconsistentes durante la reconfiguración en tiempo de ejecución (RF-02).
+Esta centralización simplifica la reconstrucción del autómata ante cambios de configuración. Al modificar parámetros como el tamaño de la malla o la regla de transición, la clase \texttt{Automaton} garantiza que los isomorfismos establecidos en el Capítulo \ref{chap:isomorfismos} se mantengan consistentes, evitando estados inconsistentes durante la reconfiguración en tiempo de ejecución (RF-02).
 
 \subsection{Operaciones estructurales y evolutivas}
 
-El núcleo ejecuta operaciones críticas que permiten la transición del estado global de la red $\mathcal{C}_t \to \mathcal{C}_{t+1}$. La operación más relevante es el cómputo del paso de simulación, el cual debe realizarse de forma sincrónica para respetar la definición axiomática del sistema. En el Algoritmo \ref{alg:evolucion_sincrona} se describe este proceso, el cual integra la evaluación de la vecindad extendida definida en la Sección \ref{sec:ajuste_vecindad}.
+El núcleo ejecuta operaciones críticas que permiten la transición del estado global de la red $\mathcal{C}_t \to \mathcal{C}_{t+1}$. La operación más relevante es el cómputo del paso de simulación, el cual debe realizarse de forma sincrónica para respetar la definición axiomática del sistema. En el Algoritmo \ref{alg:evolucion_sincrona} se describe este proceso, el cual integra la evaluación de la vecindad extendida definida en la Sección \ref{subsec:vecindades_extendidas}.
 
 \begin{algorithm}[H]
 \caption{Cómputo de la transición sincrónica de la red.}\label{alg:evolucion_sincrona}
@@ -210,7 +210,7 @@ El núcleo ejecuta operaciones críticas que permiten la transición del estado 
 \end{algorithmic}
 \end{algorithm}
 
-Además de la evolución temporal, el núcleo permite el redimensionamiento dinámico del espacio discreto y la modificación manual de estados (RF-03). Debido a la separación entre el almacenamiento y la lógica de transición, estas operaciones poseen una complejidad temporal de $\mathcal{O}(1)$ para accesos individuales y $\mathcal{O}(n)$ para transformaciones globales, alineándose con las cotas establecidas en la Sección \ref{sec:analisis_asintotico_mapeo}.
+Además de la evolución temporal, el núcleo permite el redimensionamiento dinámico del espacio discreto y la modificación manual de estados (RF-03). Debido a la separación entre el almacenamiento y la lógica de transición, estas operaciones poseen una complejidad temporal de $\mathcal{O}(1)$ para accesos individuales y $\mathcal{O}(n)$ para transformaciones globales, alineándose con las cotas establecidas en la Sección \ref{sec:complejidad_renderizado}.
 
 \subsection{Estructuras de almacenamiento discreto y optimización espacial}
 
@@ -218,7 +218,7 @@ La gestión de memoria en el simulador trasciende la simple reserva de arreglos 
 
 \subsubsection{Sustrato de doble almacenamiento (Double Buffering)}
 
-Para evitar las condiciones de carrera lógicas mencionadas en el Capítulo \ref{cap:geometria_computacional}, el sistema mantiene dos búferes de memoria: el \textit{Front Buffer} (lectura) y el \textit{Back Buffer} (escritura). Como se fundamentó en la Ecuación \eqref{eq:complejidad_espacial_linear}, esta técnica duplica el requerimiento de memoria física para garantizar un sincronismo perfecto, permitiendo que la evaluación de $\delta$ dependa únicamente del estado global en el tiempo $t$ \cite{Toffoli1987}.
+Para evitar las condiciones de carrera lógicas mencionadas en el Capítulo \ref{cap:geometria_computacional}, el sistema mantiene dos búferes de memoria: el \textit{Front Buffer} (lectura) y el \textit{Back Buffer} (escritura). Como se fundamentó en la Sección \ref{sec:complejidad_renderizado}, esta técnica duplica el requerimiento de memoria física para garantizar un sincronismo perfecto, permitiendo que la evaluación de $\delta$ dependa únicamente del estado global en el tiempo $t$ \cite{Toffoli1987}.
 
 \subsubsection{Representación mediante arreglos de bits (BitArray)}
 
@@ -260,7 +260,7 @@ Esta capa, posicionada jerárquicamente sobre el núcleo según la topología de
 
 Para gestionar la dimensión cronológica, se diseña la clase \texttt{Simulation} como administrador operacional principal. La decisión de separar la entidad \texttt{Automaton} respecto a la entidad \texttt{Simulation} obedece a un principio fundamental de diseño de software: la separación de responsabilidades (\textit{Separation of Concerns}). 
 
-Mientras que el \texttt{Automaton} sabe \textit{cómo} evolucionar dadas las reglas topológicas analizadas en el Capítulo \ref{cap:isomorfismos}, carece de información sobre la frecuencia con la que debe hacerlo. Al instanciar la clase \texttt{Simulation} como un contenedor que envuelve al autómata subyacente, se logra una ventaja arquitectónica crítica: el motor algebraico permanece puramente matemático y predecible, mientras que el controlador temporal maneja variables operacionales (como el tiempo transcurrido, las pausas y los incrementos manuales) sin contaminar el cálculo de la complejidad $\mathcal{O}(n)$.
+Mientras que el \texttt{Automaton} sabe \textit{cómo} evolucionar dadas las reglas topológicas analizadas en el Capítulo \ref{chap:isomorfismos}, carece de información sobre la frecuencia con la que debe hacerlo. Al instanciar la clase \texttt{Simulation} como un contenedor que envuelve al autómata subyacente, se logra una ventaja arquitectónica crítica: el motor algebraico permanece puramente matemático y predecible, mientras que el controlador temporal maneja variables operacionales (como el tiempo transcurrido, las pausas y los incrementos manuales) sin contaminar el cálculo de la complejidad $\mathcal{O}(n)$.
 
 \subsection{Administración de estados de ejecución y sincronización}
 
@@ -382,7 +382,7 @@ La ventaja técnica de este enfoque radica en la extensibilidad: es posible inco
 Las especializaciones de la interfaz \texttt{AutomatonRenderer} son las responsables de aplicar las ecuaciones de mapeo direccional definidas en la Ecuación \eqref{eq:mapeo_direccional}. A continuación, se describen las responsabilidades de estas especializaciones, tomando como referencia el renderizado hexagonal:
 
 \begin{itemize}
-    \item \textbf{Generación de mallas dinámicas:} El renderizador calcula la posición de los vértices de cada celda basándose en el radio $r$ y el \textit{offset} de fase definido en la Sección \ref{sec:ajuste_vecindad}.
+    \item \textbf{Generación de mallas dinámicas:} El renderizador calcula la posición de los vértices de cada celda basándose en el radio $r$ y el \textit{offset} de fase definido en la Sección \ref{sec:transformaciones_afines}.
     \item \textbf{Mapeo de estados a descriptores visuales:} Traduce el valor binario del estado (0 o 1) hacia propiedades de color y opacidad. En los experimentos de colisión de partículas (Capítulo \ref{cap:dinamica_particulas}), esto permite diferenciar claramente los frentes de onda de las estructuras estables (\textit{still lifes}).
     \item \textbf{Optimización del ciclo de dibujo:} Dado que el número de celdas $n$ puede ser elevado, el renderizador implementa técnicas de visibilidad para dibujar únicamente las celdas contenidas dentro del área de recorte (\textit{frustum}) del Viewport activo.
 \end{itemize}

@@ -14,8 +14,7 @@
 \section{Axiomatización geométrica de las teselaciones hexagonales y métricas planares}
 \label{sec:axiomatizacion_hexagonal}
 
-La discretización del plano euclidiano $\mathbb{R}^2$ mediante polígonos regulares permite la construcción de espacios celulares donde la adyacencia es uniforme. A diferencia de la retícula estándar definida en la Sección 2.1 \eqref{eq:espacio_celular} % TODO: Verificar etiqueta del capítulo 2 sobre definición de espacios celulares
-, la teselación hexagonal se caracteriza por poseer el mayor grado de simetría axial en el plano, eliminando las ambigüedades de vecindad presentes en las mallas cuadrangulares (donde se debe distinguir entre adyacencia de arista y de vértice).
+La discretización del plano euclidiano $\mathbb{R}^2$ mediante polígonos regulares permite la construcción de espacios celulares donde la adyacencia es uniforme. A diferencia de la retícula estándar definida en la Sección \ref{sec:fundamentacion}, la teselación hexagonal se caracteriza por poseer el mayor grado de simetría axial en el plano, eliminando las ambigüedades de vecindad presentes en las mallas cuadrangulares (donde se debe distinguir entre adyacencia de arista y de vértice).
 
 \subsection{Representación paramétrica de la celda hexagonal regular}
 \label{subsec:parametrizacion}
@@ -85,8 +84,7 @@ Tras haber definido las propiedades geométricas y la métrica de la teselación
 
 Para formalizar la equivalencia topológica entre dos espacios celulares distintos, es preciso abstraer la red subyacente empleando la teoría de grafos. Sea $G = (V, E)$ un grafo reticular infinito, donde el conjunto de vértices $V$ representa los índices espaciales de las celdas y el conjunto de aristas $E$ define las relaciones de adyacencia estipuladas por la vecindad axiomática.
 
-Bajo esta premisa, se denota como $G_H = (V_H, E_H)$ al grafo derivado de la teselación hexagonal gobernado por la vecindad $\mathcal{N}_H$, y como $G_Q = (V_Q, E_Q)$ al grafo correspondiente a la retícula ortogonal $\mathbb{Z}^2$ \eqref{eq:espacio_celular} % TODO: Verificar etiqueta del Capítulo 2 para la definición Z^2
-. Un homomorfismo espacial entre ambas topologías se establece a través de una función de mapeo $\Phi$ que proyecta los elementos de un dominio sobre el otro preservando sus estructuras de conectividad.
+Bajo esta premisa, se denota como $G_H = (V_H, E_H)$ al grafo derivado de la teselación hexagonal gobernado por la vecindad $\mathcal{N}_H$, y como $G_Q = (V_Q, E_Q)$ al grafo correspondiente a la retícula ortogonal $\mathbb{Z}^2$ (Sección \ref{sec:fundamentacion}). Un homomorfismo espacial entre ambas topologías se establece a través de una función de mapeo $\Phi$ que proyecta los elementos de un dominio sobre el otro preservando sus estructuras de conectividad.
 
 No obstante, debido a la diferencia intrínseca en los grados de los vértices (grado 6 uniforme en $G_H$ frente a grado 4 u 8 en $G_Q$), resulta matemáticamente imposible establecer un isomorfismo biyectivo trivial de cardinalidad uno a uno entre celdas individuales que conserve de manera isótropa las distancias \cite{Toffoli1987}. Por consiguiente, se define un mapeo biyectivo hacia subredes, donde cada vértice $v \in V_H$ se asocia unívocamente a un subgrafo inducido $B \subset V_Q$. Para que el sistema celular se considere topológicamente equivalente y capaz de simular la misma física discreta, la función $\Phi$ debe cumplir la condición de adyacencia: si $(u, v) \in E_H$, entonces debe existir una adyacencia efectiva y computable entre los bloques de subconjuntos $\Phi(u)$ y $\Phi(v)$ en el dominio ortogonal.
 
